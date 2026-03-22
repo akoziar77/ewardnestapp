@@ -87,8 +87,9 @@ export function useGeofence() {
           latitude, longitude,
           brand.latitude, brand.longitude
         );
-
-        const isInside = distance <= brand.geofence_radius_meters;
+        const userRadius = getGeofenceRadiusMeters();
+        const effectiveRadius = Math.min(brand.geofence_radius_meters, userRadius);
+        const isInside = distance <= effectiveRadius;
         const wasInside = insideFencesRef.current.has(brand.id);
 
         if (isInside && !wasInside) {
