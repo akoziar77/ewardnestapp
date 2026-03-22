@@ -250,7 +250,11 @@ export default function Brands() {
 
   const filtered = brands
     .filter((b) => !b.category || !hiddenCategories.includes(b.category))
-    .filter((b) => !filter || b.category === filter)
+    .filter((b) => {
+      if (!filter) return true;
+      if (filter === "__favorites__") return favoriteIds.includes(b.id);
+      return b.category === filter;
+    })
     .filter((b) => !searchQuery || b.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const visibleCategories = categories.filter((c) => !hiddenCategories.includes(c));
