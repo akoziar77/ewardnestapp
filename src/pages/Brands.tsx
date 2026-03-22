@@ -145,6 +145,23 @@ export default function Brands() {
     enabled: !!user,
   });
 
+  const { data: loyaltyConnections = [] } = useQuery({
+    queryKey: ["loyalty-connections", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("external_loyalty_connections" as any)
+        .select("*")
+        .eq("user_id", user!.id);
+      return (data ?? []) as any[];
+    },
+    enabled: !!user,
+  });
+
+  const [loyaltyBrandId, setLoyaltyBrandId] = useState<string | null>(null);
+
+  const getLoyaltyConnection = (brandId: string) =>
+    loyaltyConnections.find((c: any) => c.brand_id === brandId) || null;
+
   const toggleFavoriteMutation = useMutation({
     mutationFn: async (brandId: string) => {
       const isFav = favoriteIds.includes(brandId);
