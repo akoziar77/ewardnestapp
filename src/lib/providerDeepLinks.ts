@@ -16,6 +16,40 @@ export interface ProviderLink {
   webUrl: string;
   /** Human-readable app name */
   appName: string;
+  /** Registration / sign-up URL (supports query-param pre-fill) */
+  registrationUrl?: string;
+}
+
+export interface PreFillData {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  zipCode?: string;
+}
+
+/**
+ * Build a registration URL with pre-filled user data.
+ * Falls back to the provider's webUrl if no registrationUrl is defined.
+ */
+export function buildRegistrationUrl(
+  loyaltyProvider: string | null | undefined,
+  preFill: PreFillData
+): string | null {
+  const link = getProviderLink(loyaltyProvider);
+  if (!link) return null;
+
+  const base = link.registrationUrl ?? link.webUrl;
+  const url = new URL(base);
+
+  // Add common pre-fill params that many registration forms accept
+  if (preFill.firstName) url.searchParams.set("firstName", preFill.firstName);
+  if (preFill.lastName) url.searchParams.set("lastName", preFill.lastName);
+  if (preFill.email) url.searchParams.set("email", preFill.email);
+  if (preFill.phone) url.searchParams.set("phone", preFill.phone);
+  if (preFill.zipCode) url.searchParams.set("zipCode", preFill.zipCode);
+
+  return url.toString();
 }
 
 /**
