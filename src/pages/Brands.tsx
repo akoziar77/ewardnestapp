@@ -305,6 +305,13 @@ export default function Brands() {
           </p>
         </div>
         <button
+          onClick={() => setViewMode(viewMode === "list" ? "map" : "list")}
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:text-foreground active:scale-95"
+          title={viewMode === "list" ? "Map view" : "List view"}
+        >
+          {viewMode === "list" ? <Map className="h-5 w-5" /> : <List className="h-5 w-5" />}
+        </button>
+        <button
           onClick={() => navigate("/brands/settings")}
           className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:text-foreground active:scale-95"
         >
