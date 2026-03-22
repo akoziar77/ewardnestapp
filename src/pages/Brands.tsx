@@ -525,6 +525,11 @@ export default function Brands() {
                       <p className="text-xs text-muted-foreground">
                         {brand.category} · {brand.milestone_points} pts at{" "}
                         {brand.milestone_visits} visits
+                        {sortByDistance && brandDistance != null && (
+                          <span className="ml-1 inline-flex items-center gap-0.5">
+                            · <Navigation className="inline h-2.5 w-2.5" /> {formatDistance(brandDistance)}
+                          </span>
+                        )}
                       </p>
                       <div className="mt-2 flex items-center gap-2">
                         <Progress value={progress} className="h-1.5 flex-1" />
