@@ -64,6 +64,7 @@ export default function LoyaltyConnectDialog({
 }: Props) {
   const { user } = useAuth();
   const [providerName, setProviderName] = useState("");
+  const [isCustomProvider, setIsCustomProvider] = useState(false);
   const [apiEndpoint, setApiEndpoint] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [memberId, setMemberId] = useState("");
