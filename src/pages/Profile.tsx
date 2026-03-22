@@ -145,9 +145,38 @@ export default function Profile() {
         <div className="flex-1 space-y-6 px-6 py-2">
           {/* Avatar + name card */}
           <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-6">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-primary-foreground text-2xl font-bold">
-              {initials}
-            </div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="relative group active:scale-95 transition-transform"
+            >
+              {profile?.avatar_url ? (
+                <img
+                  src={profile.avatar_url}
+                  alt="Avatar"
+                  className="h-20 w-20 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-primary-foreground text-2xl font-bold">
+                  {initials}
+                </div>
+              )}
+              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera className="h-5 w-5 text-white" />
+              </div>
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                </div>
+              )}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+            />
             <div className="text-center">
               <p className="text-lg font-semibold">
                 {profile?.display_name ?? "No name set"}
