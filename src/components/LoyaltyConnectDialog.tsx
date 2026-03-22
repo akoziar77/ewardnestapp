@@ -205,79 +205,138 @@ export default function LoyaltyConnectDialog({
 
         {connection ? (
           <div className="space-y-4 pt-2">
-            <div className="rounded-xl bg-muted p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Provider
-                </span>
-                <span className="text-sm font-semibold">{connection.provider_name}</span>
-              </div>
-              {connection.external_member_id && (
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Member ID
-                  </span>
-                  <span className="text-sm font-mono">{connection.external_member_id}</span>
+            {!isEditing ? (
+              <>
+                <div className="rounded-xl bg-muted p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Provider
+                    </span>
+                    <span className="text-sm font-semibold">{connection.provider_name}</span>
+                  </div>
+                  {connection.external_member_id && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Member ID
+                      </span>
+                      <span className="text-sm font-mono">{connection.external_member_id}</span>
+                    </div>
+                  )}
+                  {connection.external_points_balance != null && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        External points
+                      </span>
+                      <span className="text-sm font-bold text-primary">
+                        {connection.external_points_balance.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Status
+                    </span>
+                    <span
+                      className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                        connection.status === "connected"
+                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                          : "bg-destructive/10 text-destructive"
+                      }`}
+                    >
+                      {connection.status}
+                    </span>
+                  </div>
+                  {connection.last_synced_at && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Last synced
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(connection.last_synced_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              )}
-              {connection.external_points_balance != null && (
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    External points
-                  </span>
-                  <span className="text-sm font-bold text-primary">
-                    {connection.external_points_balance.toLocaleString()}
-                  </span>
-                </div>
-              )}
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Status
-                </span>
-                <span
-                  className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                    connection.status === "connected"
-                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
-                      : "bg-destructive/10 text-destructive"
-                  }`}
-                >
-                  {connection.status}
-                </span>
-              </div>
-              {connection.last_synced_at && (
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Last synced
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(connection.last_synced_at).toLocaleDateString()}
-                  </span>
-                </div>
-              )}
-            </div>
 
-            <div className="flex gap-2">
-              {connection.api_endpoint && connection.status === "connected" && false && (
-                <Button
-                  variant="outline"
-                  className="flex-1 gap-2 active:scale-[0.97]"
-                  onClick={handleSync}
-                  disabled={loading}
-                >
-                  <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-                  Sync
-                </Button>
-              )}
-              <Button
-                variant="destructive"
-                className="flex-1 gap-2 active:scale-[0.97]"
-                onClick={handleDisconnect}
-                disabled={loading}
-              >
-                <Unlink className="h-4 w-4" />
-                Disconnect
-              </Button>
-            </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1 gap-2 active:scale-[0.97]"
+                    onClick={() => {
+                      setEditMemberId(connection.external_member_id || "");
+                      setEditPoints(connection.external_points_balance?.toString() || "");
+                      setIsEditing(true);
+                    }}
+                  >
+                    <User className="h-4 w-4" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="flex-1 gap-2 active:scale-[0.97]"
+                    onClick={handleDisconnect}
+                    disabled={loading}
+                  >
+                    <Unlink className="h-4 w-4" />
+                    Disconnect
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Member ID
+                    </Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        value={editMemberId}
+                        onChange={(e) => setEditMemberId(e.target.value)}
+                        placeholder="Your loyalty member ID"
+                        className="pl-10"
+                        maxLength={100}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Points balance
+                    </Label>
+                    <div className="relative">
+                      <Coins className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        type="number"
+                        value={editPoints}
+                        onChange={(e) => setEditPoints(e.target.value)}
+                        placeholder="e.g. 12500"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1 active:scale-[0.97]"
+                    onClick={() => setIsEditing(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 gap-2 active:scale-[0.97]"
+                    onClick={handleUpdate}
+                    disabled={loading}
+                  >
+                    <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                    {loading ? "Saving…" : "Save"}
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         ) : (
           <div className="space-y-4 pt-2">
