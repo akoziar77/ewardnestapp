@@ -302,7 +302,7 @@ export default function Brands() {
         >
           All
         </button>
-        {categories.map((cat) => (
+        {visibleCategories.map((cat) => (
           <button
             key={cat}
             onClick={() => setFilter(cat)}

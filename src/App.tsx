@@ -43,6 +43,7 @@ const App = () => (
             <Route path="/history" element={<History />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/brands" element={<Brands />} />
+            <Route path="/brands/settings" element={<BrandSettings />} />
             <Route path="/merchant/login" element={<MerchantLogin />} />
             <Route path="/merchant/onboarding" element={<MerchantOnboarding />} />
             <Route path="/merchant" element={<MerchantLayout />}>
