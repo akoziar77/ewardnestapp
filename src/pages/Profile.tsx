@@ -67,8 +67,15 @@ export default function Profile() {
     mutationFn: async () => {
       const { error } = await supabase
         .from("profiles")
-        .update({ display_name: formName.trim(), phone: formPhone.trim() })
+        .update({
+          display_name: formName.trim(),
+          phone: formPhone.trim(),
+          address: formAddress.trim() || null,
+          city: formCity.trim() || null,
+          state: formState.trim() || null,
+        } as any)
         .eq("user_id", user!.id);
+      if (error) throw error;
       if (error) throw error;
     },
     onSuccess: () => {
