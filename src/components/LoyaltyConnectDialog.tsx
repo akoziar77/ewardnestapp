@@ -22,6 +22,7 @@ import {
 import { toast } from "sonner";
 import { Link2, Unlink, RefreshCw, Key, Globe, User, Coins, UserPlus } from "lucide-react";
 import { buildRegistrationUrl } from "@/lib/providerDeepLinks";
+import { autoConnectOnRegister } from "@/lib/autoConnectOnRegister";
 
 const LOYALTY_PRESETS = [
   { name: "Starbucks Rewards", endpoint: "https://api.starbucks.com/loyalty/v1/balance" },
