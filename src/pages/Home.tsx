@@ -437,6 +437,58 @@ export default function Home() {
           </Button>
         </div>
       )}
+      {/* Loyalty brand choice dialog */}
+      <Dialog open={!!loyaltyChoiceConn} onOpenChange={(open) => !open && setLoyaltyChoiceConn(null)}>
+        <DialogContent className="max-w-xs rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base">
+              {loyaltyChoiceConn?.provider_name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 pt-1">
+            {(() => {
+              const brand = connBrands.find((b: any) => b.id === loyaltyChoiceConn?.brand_id);
+              const appUrl = brand?.loyalty_api_url;
+              return (
+                <>
+                  {appUrl && (
+                    <button
+                      onClick={() => {
+                        window.open(appUrl, "_blank", "noopener");
+                        setLoyaltyChoiceConn(null);
+                      }}
+                      className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-all hover:shadow-sm active:scale-[0.97]"
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                        <Smartphone className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Open app</p>
+                        <p className="text-[11px] text-muted-foreground">Launch the loyalty program</p>
+                      </div>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      navigate("/brands");
+                      setLoyaltyChoiceConn(null);
+                    }}
+                    className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-all hover:shadow-sm active:scale-[0.97]"
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
+                      <Store className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">View brand</p>
+                      <p className="text-[11px] text-muted-foreground">Go to the brands page</p>
+                    </div>
+                  </button>
+                </>
+              );
+            })()}
+          </div>
+        </DialogContent>
+      </Dialog>
       <BottomNav />
     </div>
   );
