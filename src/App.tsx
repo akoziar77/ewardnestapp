@@ -27,6 +27,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Pricing from "./pages/Pricing";
 import ManageTiers from "./pages/ManageTiers";
 import AdminRoles from "./pages/admin/AdminRoles";
+import AdminPageAccess from "./pages/admin/AdminPageAccess";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
