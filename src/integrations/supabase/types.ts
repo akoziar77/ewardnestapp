@@ -52,6 +52,8 @@ export type Database = {
           created_at: string
           id: string
           logo_emoji: string
+          loyalty_api_url: string | null
+          loyalty_provider: string | null
           milestone_points: number
           milestone_visits: number
           name: string
@@ -62,6 +64,8 @@ export type Database = {
           created_at?: string
           id?: string
           logo_emoji?: string
+          loyalty_api_url?: string | null
+          loyalty_provider?: string | null
           milestone_points?: number
           milestone_visits?: number
           name: string
@@ -72,6 +76,8 @@ export type Database = {
           created_at?: string
           id?: string
           logo_emoji?: string
+          loyalty_api_url?: string | null
+          loyalty_provider?: string | null
           milestone_points?: number
           milestone_visits?: number
           name?: string
@@ -165,6 +171,62 @@ export type Database = {
           used_at?: string | null
         }
         Relationships: []
+      }
+      external_loyalty_connections: {
+        Row: {
+          access_token: string | null
+          api_endpoint: string | null
+          brand_id: string
+          created_at: string
+          external_member_id: string | null
+          external_points_balance: number | null
+          id: string
+          last_synced_at: string | null
+          provider_name: string
+          refresh_token: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          api_endpoint?: string | null
+          brand_id: string
+          created_at?: string
+          external_member_id?: string | null
+          external_points_balance?: number | null
+          id?: string
+          last_synced_at?: string | null
+          provider_name: string
+          refresh_token?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          api_endpoint?: string | null
+          brand_id?: string
+          created_at?: string
+          external_member_id?: string | null
+          external_points_balance?: number | null
+          id?: string
+          last_synced_at?: string | null
+          provider_name?: string
+          refresh_token?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_loyalty_connections_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       favorite_brands: {
         Row: {
