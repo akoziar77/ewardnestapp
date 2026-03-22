@@ -428,23 +428,25 @@ export default function Brands() {
       {/* Map view */}
       {viewMode === "map" && (
         <div className="px-6 py-2">
-          <BrandMapView
-            brands={filtered.map((b) => ({
-              id: b.id,
-              name: b.name,
-              logo_emoji: b.logo_emoji,
-              latitude: (b as any).latitude,
-              longitude: (b as any).longitude,
-              geofence_radius_meters: (b as any).geofence_radius_meters ?? 200,
-              category: b.category,
-              milestone_visits: b.milestone_visits,
-              milestone_points: b.milestone_points,
-            }))}
-            onBrandClick={(id) => {
-              setViewMode("list");
-              setExpandedBrandId(id);
-            }}
-          />
+          <Suspense fallback={<div className="flex items-center justify-center h-[420px] rounded-2xl bg-muted"><p className="text-sm text-muted-foreground">Loading map…</p></div>}>
+            <BrandMapView
+              brands={filtered.map((b) => ({
+                id: b.id,
+                name: b.name,
+                logo_emoji: b.logo_emoji,
+                latitude: (b as any).latitude,
+                longitude: (b as any).longitude,
+                geofence_radius_meters: (b as any).geofence_radius_meters ?? 200,
+                category: b.category,
+                milestone_visits: b.milestone_visits,
+                milestone_points: b.milestone_points,
+              }))}
+              onBrandClick={(id) => {
+                setViewMode("list");
+                setExpandedBrandId(id);
+              }}
+            />
+          </Suspense>
         </div>
       )}
 
