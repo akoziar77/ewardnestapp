@@ -357,13 +357,14 @@ export default function Home() {
                 </div>
                 <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
                   {favoriteBrands.map((brand: any) => {
-                    const visibleFields = getVisibleWidgetFields();
+                    const brandFields = getFieldsForBrand(brand.id);
                     const ctx = buildFieldContext(brand);
                     const count = visitCountForBrand(brand.id);
                     const progress = Math.min((count / brand.milestone_visits) * 100, 100);
+                    const hasOverride = hasBrandFieldOverride(brand.id);
 
                     // Get fields to render on widget
-                    const fieldsToRender = LOYALTY_API_FIELDS.filter((f) => visibleFields.includes(f.key));
+                    const fieldsToRender = LOYALTY_API_FIELDS.filter((f) => brandFields.includes(f.key));
 
                     return (
                       <button
