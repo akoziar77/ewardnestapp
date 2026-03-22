@@ -308,6 +308,17 @@ export default function Brands() {
         >
           All
         </button>
+        <button
+          onClick={() => setFilter("__favorites__")}
+          className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition-all active:scale-[0.96] flex items-center gap-1 ${
+            filter === "__favorites__"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "bg-muted text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Heart className={`h-3 w-3 ${filter === "__favorites__" ? "fill-current" : ""}`} />
+          Favorites
+        </button>
         {visibleCategories.map((cat) => (
           <button
             key={cat}
