@@ -317,7 +317,16 @@ export default function Brands() {
       if (filter === "__favorites__") return favoriteIds.includes(b.id);
       return b.category === filter;
     })
-    .filter((b) => !searchQuery || b.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    .filter((b) => !searchQuery || b.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    .sort((a, b) => {
+      if (!sortByDistance || !userPos) return 0;
+      const dA = getDistanceToBrand(a);
+      const dB = getDistanceToBrand(b);
+      if (dA == null && dB == null) return 0;
+      if (dA == null) return 1;
+      if (dB == null) return 1;
+      return dA - dB;
+    });
 
   const visibleCategories = categories.filter((c) => !hiddenCategories.includes(c));
 
