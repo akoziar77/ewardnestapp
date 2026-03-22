@@ -465,37 +465,35 @@ export default function Brands() {
                   {isExpanded && (
                     <div className="border-t border-border px-4 pb-4">
                       {/* Brand details — all API fields */}
-                      <div className="pt-3 pb-3">
+                       <div className="pt-3 pb-3">
                         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                           Brand details
                         </p>
                         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                          <div>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Category</p>
-                            <p className="text-xs font-medium">{brand.category || <span className="italic text-muted-foreground/50">Not set</span>}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Loyalty Program</p>
-                            <p className="text-xs font-medium">{brand.loyalty_provider || <span className="italic text-muted-foreground/50">Not set</span>}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Milestone Visits</p>
-                            <p className="text-xs font-medium tabular-nums">{brand.milestone_visits}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Milestone Points</p>
-                            <p className="text-xs font-medium tabular-nums">{brand.milestone_points}</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Visit Expiry</p>
-                            <p className="text-xs font-medium tabular-nums">{brand.visit_expiry_months} months</p>
-                          </div>
-                          <div>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Logo</p>
-                            <p className="text-lg">{brand.logo_emoji}</p>
-                          </div>
+                          {BRAND_API_FIELDS.map(({ label, apiName, getValue }) => {
+                            const val = getValue(brand);
+                            const isLogo = apiName === "logo_emoji";
+                            return (
+                              <div key={apiName}>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                  {label}
+                                </p>
+                                <p className="text-[9px] font-mono text-muted-foreground/50 mb-0.5">
+                                  {apiName}
+                                </p>
+                                {isLogo ? (
+                                  <p className="text-lg">{val}</p>
+                                ) : val ? (
+                                  <p className="text-xs font-medium tabular-nums">{val}</p>
+                                ) : (
+                                  <p className="text-xs italic text-muted-foreground/50">Not set</p>
+                                )}
+                              </div>
+                            );
+                          })}
                           <div className="col-span-2">
                             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Website</p>
+                            <p className="text-[9px] font-mono text-muted-foreground/50 mb-0.5">website_url</p>
                             {brand.website_url ? (
                               <a
                                 href={brand.website_url}
@@ -512,6 +510,7 @@ export default function Brands() {
                           </div>
                           <div className="col-span-2">
                             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Loyalty URL</p>
+                            <p className="text-[9px] font-mono text-muted-foreground/50 mb-0.5">loyalty_api_url</p>
                             {brand.loyalty_api_url ? (
                               <a
                                 href={brand.loyalty_api_url}
@@ -528,17 +527,6 @@ export default function Brands() {
                           </div>
                         </div>
                       </div>
-
-                      {/* Widget display toggles */}
-                      <div className="pt-3 border-t border-border">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShowWidgetSettings((v) => !v);
-                          }}
-                          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 active:scale-[0.98]"
-                        >
-                          <Eye className="h-3 w-3" />
                           Home widget fields
                           <ChevronDown className={`h-3 w-3 transition-transform ${showWidgetSettings ? "rotate-180" : ""}`} />
                         </button>
