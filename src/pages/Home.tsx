@@ -461,6 +461,9 @@ export default function Home() {
               </div>
             );
 
+          case "nearby":
+            return <NearbyBrandsWidget key="nearby" />;
+
           default:
             return null;
         }
