@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,7 +55,7 @@ export default function Home() {
     : "Hey there";
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background pb-20">
       {/* Header */}
       <header className="flex items-center justify-between px-6 pt-12 pb-4">
         <div>
@@ -171,6 +172,7 @@ export default function Home() {
           </Button>
         </div>
       )}
+      <BottomNav />
     </div>
   );
 }

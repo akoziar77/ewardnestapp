@@ -4,6 +4,7 @@ import { Html5Qrcode } from "html5-qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, Check, X, Camera } from "lucide-react";
+import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 
 type ScanState =
@@ -125,7 +126,7 @@ export default function Scan() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background pb-20">
       {/* Header */}
       <header className="flex items-center gap-3 px-6 pt-12 pb-4">
         <button
@@ -217,6 +218,7 @@ export default function Scan() {
           </div>
         )}
       </div>
+      <BottomNav />
     </div>
   );
 }

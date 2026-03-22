@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -113,7 +114,7 @@ export default function Rewards() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background pb-20">
       {/* Header */}
       <header className="flex items-center gap-3 px-6 pt-12 pb-4">
         <button
@@ -294,6 +295,7 @@ export default function Rewards() {
           )}
         </DialogContent>
       </Dialog>
+      <BottomNav />
     </div>
   );
 }
