@@ -730,6 +730,42 @@ export type Database = {
         }
         Relationships: []
       }
+      quick_actions: {
+        Row: {
+          color_class: string
+          created_at: string
+          icon_name: string
+          id: string
+          label: string
+          route: string
+          sort_order: number
+          updated_at: string
+          visible: boolean
+        }
+        Insert: {
+          color_class?: string
+          created_at?: string
+          icon_name?: string
+          id?: string
+          label: string
+          route: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Update: {
+          color_class?: string
+          created_at?: string
+          icon_name?: string
+          id?: string
+          label?: string
+          route?: string
+          sort_order?: number
+          updated_at?: string
+          visible?: boolean
+        }
+        Relationships: []
+      }
       redemptions: {
         Row: {
           created_at: string
