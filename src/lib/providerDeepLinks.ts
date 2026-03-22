@@ -159,6 +159,7 @@ const PROVIDER_LINKS: Record<string, ProviderLink> = {
     playStoreUrl: "https://play.google.com/store/apps/details?id=com.starbucks.mobilecard",
     webUrl: "https://www.starbucks.com/rewards",
     appName: "Starbucks",
+    registrationUrl: "https://www.starbucks.com/account/create",
   },
   "chipotle rewards": {
     appStoreUrl: "https://apps.apple.com/app/chipotle/id327228455",
