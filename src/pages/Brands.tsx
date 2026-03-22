@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import LoyaltyConnectDialog from "@/components/LoyaltyConnectDialog";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, MapPin, Trophy, Sparkles, Clock, ChevronDown, Trash2, Heart, Link2, Search, ExternalLink } from "lucide-react";
+import { ArrowLeft, Plus, MapPin, Trophy, Sparkles, Clock, ChevronDown, Trash2, Heart, Link2, Search, ExternalLink, Settings } from "lucide-react";
+import { getHiddenCategories } from "@/pages/BrandSettings";
 import { format } from "date-fns";
 
 interface Brand {
@@ -243,9 +244,14 @@ export default function Brands() {
 
   const categories = [...new Set(brands.map((b) => b.category).filter(Boolean))] as string[];
 
+  const hiddenCategories = getHiddenCategories();
+
   const filtered = brands
+    .filter((b) => !b.category || !hiddenCategories.includes(b.category))
     .filter((b) => !filter || b.category === filter)
     .filter((b) => !searchQuery || b.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  const visibleCategories = categories.filter((c) => !hiddenCategories.includes(c));
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-20">
@@ -256,12 +262,18 @@ export default function Brands() {
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-xl font-bold tracking-tight">Brands</h1>
           <p className="text-sm text-muted-foreground">
             Track visits to earn milestone rewards
           </p>
         </div>
+        <button
+          onClick={() => navigate("/brands/settings")}
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:text-foreground active:scale-95"
+        >
+          <Settings className="h-5 w-5" />
+        </button>
       </header>
 
       {/* Search bar */}
@@ -290,7 +302,7 @@ export default function Brands() {
         >
           All
         </button>
-        {categories.map((cat) => (
+        {visibleCategories.map((cat) => (
           <button
             key={cat}
             onClick={() => setFilter(cat)}
