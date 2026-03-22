@@ -49,6 +49,8 @@ interface Props {
   brandId: string;
   brandName: string;
   brandEmoji: string;
+  loyaltyProvider?: string | null;
+  loyaltyApiUrl?: string | null;
   connection: LoyaltyConnection | null;
   onConnectionChange: () => void;
 }
