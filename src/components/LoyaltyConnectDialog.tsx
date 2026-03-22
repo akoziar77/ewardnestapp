@@ -453,6 +453,19 @@ export default function LoyaltyConnectDialog({
               <Link2 className="h-4 w-4" />
               {loading ? "Connecting…" : "Connect program"}
             </Button>
+
+            {registrationUrl && !connection && (
+              <Button
+                variant="outline"
+                className="w-full gap-2 active:scale-[0.97]"
+                asChild
+              >
+                <a href={registrationUrl} target="_blank" rel="noopener noreferrer">
+                  <UserPlus className="h-4 w-4" />
+                  Register for {loyaltyProvider}
+                </a>
+              </Button>
+            )}
           </div>
         )}
       </DialogContent>
