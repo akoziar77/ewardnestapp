@@ -88,6 +88,7 @@ export default function LoyaltyConnectDialog({
   const [isEditing, setIsEditing] = useState(false);
   const [editMemberId, setEditMemberId] = useState("");
   const [editPoints, setEditPoints] = useState("");
+  const [editPassword, setEditPassword] = useState("");
 
   const handleUpdate = async () => {
     if (!user || !connection) return;
@@ -298,6 +299,7 @@ export default function LoyaltyConnectDialog({
                     onClick={() => {
                       setEditMemberId(connection.external_member_id || "");
                       setEditPoints(connection.external_points_balance?.toString() || "");
+                      setEditPassword("");
                       setIsEditing(true);
                     }}
                   >
@@ -346,6 +348,23 @@ export default function LoyaltyConnectDialog({
                         onChange={(e) => setEditPoints(e.target.value)}
                         placeholder="e.g. 12500"
                         className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Password
+                    </Label>
+                    <div className="relative">
+                      <Key className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        type="password"
+                        value={editPassword}
+                        onChange={(e) => setEditPassword(e.target.value)}
+                        placeholder="Update password (leave blank to keep)"
+                        className="pl-10"
+                        maxLength={200}
                       />
                     </div>
                   </div>
