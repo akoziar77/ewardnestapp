@@ -39,6 +39,7 @@ import {
   Trash2,
   Crown,
   FileText,
+  Settings,
 } from "lucide-react";
 import { requestNotificationPermission } from "@/hooks/useGeofence";
 import { hasFeatureAccess } from "@/lib/featureGates";
