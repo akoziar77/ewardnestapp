@@ -13,7 +13,7 @@ import {
   History, TrendingUp, UserPlus, Sparkles, Shield, Bell,
   Home, Search, Calendar, Camera, Bookmark,
   ShoppingCart, Coffee, Wallet, Music, Plane, Trophy,
-  Utensils, Ticket, Tag, Package,
+  Utensils, Ticket, Tag, Package, Rocket,
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
