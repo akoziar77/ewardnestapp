@@ -179,11 +179,23 @@ export default function Home() {
       <div className="px-6 py-4">
         <div className="relative overflow-hidden rounded-3xl bg-primary p-6 text-primary-foreground shadow-xl shadow-primary/15">
           <div className="relative z-10">
-            <p className="text-sm font-medium opacity-80">Total points</p>
+            <p className="text-sm font-medium opacity-80">In-app points</p>
             <p className="mt-1 text-4xl font-bold tabular-nums tracking-tight">
               {totalPoints.toLocaleString()}
             </p>
-            <div className="mt-4 flex items-center gap-2 text-sm opacity-80">
+            {totalExternalPoints > 0 && (
+              <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/10 px-3 py-2">
+                <Sparkles className="h-4 w-4 shrink-0 opacity-90" />
+                <div className="flex-1">
+                  <p className="text-[10px] font-medium opacity-70">External loyalty</p>
+                  <p className="text-lg font-bold tabular-nums leading-tight">
+                    {totalExternalPoints.toLocaleString()}
+                  </p>
+                </div>
+                <p className="text-[10px] opacity-60">{loyaltyConnections.length} program{loyaltyConnections.length > 1 ? "s" : ""}</p>
+              </div>
+            )}
+            <div className="mt-3 flex items-center gap-2 text-sm opacity-80">
               <TrendingUp className="h-4 w-4" />
               <span>
                 {hasActivity
