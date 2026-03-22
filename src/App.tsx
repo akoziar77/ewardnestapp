@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Scan from "./pages/Scan";
+import Rewards from "./pages/Rewards";
 import MerchantLogin from "./pages/merchant/MerchantLogin";
 import MerchantLayout from "./pages/merchant/MerchantLayout";
 import MerchantOverview from "./pages/merchant/MerchantOverview";
