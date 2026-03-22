@@ -10,6 +10,7 @@ import Onboarding from "./pages/Onboarding";
 import Scan from "./pages/Scan";
 import Rewards from "./pages/Rewards";
 import History from "./pages/History";
+import Profile from "./pages/Profile";
 import MerchantLogin from "./pages/merchant/MerchantLogin";
 import MerchantLayout from "./pages/merchant/MerchantLayout";
 import MerchantOverview from "./pages/merchant/MerchantOverview";
