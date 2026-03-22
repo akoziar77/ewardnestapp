@@ -52,6 +52,7 @@ export default function Profile() {
   const [formAddress, setFormAddress] = useState("");
   const [formCity, setFormCity] = useState("");
   const [formState, setFormState] = useState("");
+  const [formZip, setFormZip] = useState("");
 
   // Sync form when profile loads or edit starts
   const startEditing = () => {
@@ -60,6 +61,7 @@ export default function Profile() {
     setFormAddress((profile as any)?.address ?? "");
     setFormCity((profile as any)?.city ?? "");
     setFormState((profile as any)?.state ?? "");
+    setFormZip((profile as any)?.zip_code ?? "");
     setEditing(true);
   };
 
@@ -73,6 +75,7 @@ export default function Profile() {
           address: formAddress.trim() || null,
           city: formCity.trim() || null,
           state: formState.trim() || null,
+          zip_code: formZip.trim() || null,
         } as any)
         .eq("user_id", user!.id);
       if (error) throw error;
@@ -256,7 +259,7 @@ export default function Profile() {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-2">
                   <Label htmlFor="city" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     City
@@ -278,6 +281,18 @@ export default function Profile() {
                     onChange={(e) => setFormState(e.target.value)}
                     placeholder="CA"
                     maxLength={2}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="zip" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Zip code
+                  </Label>
+                  <Input
+                    id="zip"
+                    value={formZip}
+                    onChange={(e) => setFormZip(e.target.value)}
+                    placeholder="90210"
+                    maxLength={10}
                   />
                 </div>
               </div>
@@ -330,7 +345,7 @@ export default function Profile() {
                   <p className="text-xs text-muted-foreground">
                     {(() => {
                       const p = profile as any;
-                      const parts = [p?.address, p?.city, p?.state].filter(Boolean);
+                      const parts = [p?.address, p?.city, p?.state, p?.zip_code].filter(Boolean);
                       return parts.length > 0 ? parts.join(", ") : "Not set";
                     })()}
                   </p>
