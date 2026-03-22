@@ -213,6 +213,7 @@ const PROVIDER_LINKS: Record<string, ProviderLink> = {
     playStoreUrl: "https://play.google.com/store/apps/details?id=com.target.ui",
     webUrl: "https://www.target.com/circle",
     appName: "Target",
+    registrationUrl: "https://www.target.com/account/create",
   },
   "walmart+": {
     appStoreUrl: "https://apps.apple.com/app/walmart-shopping-grocery/id338137227",
