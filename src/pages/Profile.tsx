@@ -406,16 +406,30 @@ export default function Profile() {
                   checked={notificationsEnabled}
                   onCheckedChange={async (checked) => {
                     if (checked) {
-                      const granted = await requestNotificationPermission();
-                      if (granted && pushSupported) {
-                        await subscribePush();
+                      try {
+                        const granted = await requestNotificationPermission();
+                        if (granted) {
+                          if (pushSupported) {
+                            try {
+                              await subscribePush();
+                            } catch {
+                              // Service worker may fail in preview — still allow notifications
+                            }
+                          }
+                          setNotificationsEnabled(true);
+                          localStorage.setItem("notifications_enabled", "true");
+                          toast.success("Notifications enabled");
+                        } else {
+                          setNotificationsEnabled(false);
+                          toast.error("Notification permission was denied");
+                        }
+                      } catch {
+                        toast.error("Could not enable notifications");
                       }
-                      setNotificationsEnabled(granted);
-                      if (!granted) toast.error("Notification permission was denied");
                     } else {
                       setNotificationsEnabled(false);
+                      localStorage.setItem("notifications_enabled", "false");
                     }
-                    localStorage.setItem("notifications_enabled", String(checked));
                   }}
                 />
               </div>
