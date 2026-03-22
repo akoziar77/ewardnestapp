@@ -3,7 +3,7 @@ import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { QrCode, Gift, TrendingUp, History, UserCircle } from "lucide-react";
+import { QrCode, Gift, TrendingUp, History, UserCircle, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
