@@ -36,16 +36,54 @@ interface Brand {
   api_field_name: string | null;
 }
 
-// Mapping of brand fields to their raw API (database) column names
-const BRAND_API_FIELDS: { label: string; apiName: string; getValue: (b: Brand) => React.ReactNode }[] = [
-  { label: "Category", apiName: "category", getValue: (b) => b.category },
-  { label: "Loyalty Program", apiName: "loyalty_provider", getValue: (b) => b.loyalty_provider },
-  { label: "Milestone Visits", apiName: "milestone_visits", getValue: (b) => b.milestone_visits },
-  { label: "Milestone Points", apiName: "milestone_points", getValue: (b) => b.milestone_points },
-  { label: "Visit Expiry", apiName: "visit_expiry_months", getValue: (b) => `${b.visit_expiry_months} months` },
-  { label: "Logo", apiName: "logo_emoji", getValue: (b) => b.logo_emoji },
-  { label: "API Field Name", apiName: "api_field_name", getValue: (b) => b.api_field_name },
+// Comprehensive Loyalty API Field Inventory — mapped to database columns
+// Section 1: Member Profile Fields
+interface LoyaltyFieldDef {
+  label: string;
+  apiName: string;
+  section: string;
+  getValue: (ctx: { brand: Brand; conn: any; profile: any; visits: BrandVisit[]; expiringPts: number }) => React.ReactNode;
+}
+
+const LOYALTY_API_FIELDS: LoyaltyFieldDef[] = [
+  // 1. Member Profile Fields
+  { section: "Member Profile", label: "Member ID", apiName: "member_id", getValue: ({ conn }) => conn?.id ?? null },
+  { section: "Member Profile", label: "External Member ID", apiName: "external_member_id", getValue: ({ conn }) => conn?.external_member_id ?? null },
+  { section: "Member Profile", label: "Display Name", apiName: "display_name", getValue: ({ profile }) => profile?.display_name ?? null },
+  { section: "Member Profile", label: "Preferred Name", apiName: "preferred_name", getValue: ({ profile }) => profile?.display_name ?? null },
+
+  // 2. Account & Program Fields
+  { section: "Account & Program", label: "Category", apiName: "category", getValue: ({ brand }) => brand.category },
+  { section: "Account & Program", label: "Loyalty Program", apiName: "loyalty_provider", getValue: ({ brand }) => brand.loyalty_provider },
+  { section: "Account & Program", label: "Provider Name", apiName: "provider_name", getValue: ({ conn }) => conn?.provider_name ?? null },
+  { section: "Account & Program", label: "Connection Status", apiName: "status", getValue: ({ conn }) => conn?.status ?? null },
+  { section: "Account & Program", label: "API Field Name", apiName: "api_field_name", getValue: ({ brand }) => brand.api_field_name },
+
+  // 3. Points & Balance Fields
+  { section: "Points & Balance", label: "Milestone Points", apiName: "milestone_points", getValue: ({ brand }) => brand.milestone_points },
+  { section: "Points & Balance", label: "External Points Balance", apiName: "external_points_balance", getValue: ({ conn }) => conn?.external_points_balance != null ? conn.external_points_balance.toLocaleString() : null },
+  { section: "Points & Balance", label: "Expiring Points", apiName: "expiring_points", getValue: ({ expiringPts }) => expiringPts > 0 ? `${expiringPts} pts` : null },
+
+  // 4. Visit & Transaction Fields
+  { section: "Visits & Transactions", label: "Milestone Visits", apiName: "milestone_visits", getValue: ({ brand }) => brand.milestone_visits },
+  { section: "Visits & Transactions", label: "Visit Expiry", apiName: "visit_expiry_months", getValue: ({ brand }) => `${brand.visit_expiry_months} months` },
+  { section: "Visits & Transactions", label: "Total Visits", apiName: "visit_count", getValue: ({ visits }) => visits.length },
+  { section: "Visits & Transactions", label: "Last Visit", apiName: "last_visit_at", getValue: ({ visits }) => visits.length > 0 ? format(new Date(visits[0].created_at), "MMM d, yyyy") : null },
+
+  // 5. Partner & Integration Fields
+  { section: "Partner & Integration", label: "Loyalty API URL", apiName: "loyalty_api_url", getValue: ({ brand }) => brand.loyalty_api_url },
+  { section: "Partner & Integration", label: "API Endpoint", apiName: "api_endpoint", getValue: ({ conn }) => conn?.api_endpoint ?? null },
+  { section: "Partner & Integration", label: "Last Synced", apiName: "last_synced_at", getValue: ({ conn }) => conn?.last_synced_at ? format(new Date(conn.last_synced_at), "MMM d, yyyy") : null },
+
+  // 6. Branding & Metadata
+  { section: "Branding & Metadata", label: "Logo", apiName: "logo_emoji", getValue: ({ brand }) => brand.logo_emoji },
+  { section: "Branding & Metadata", label: "Website", apiName: "website_url", getValue: ({ brand }) => brand.website_url },
+  { section: "Branding & Metadata", label: "Brand ID", apiName: "brand_id", getValue: ({ brand }) => brand.id },
+  { section: "Branding & Metadata", label: "Created At", apiName: "created_at", getValue: ({ conn }) => conn?.created_at ? format(new Date(conn.created_at), "MMM d, yyyy") : null },
 ];
+
+// Group fields by section
+const LOYALTY_SECTIONS = [...new Set(LOYALTY_API_FIELDS.map((f) => f.section))];
 
 interface BrandVisit {
   id: string;
@@ -118,6 +156,19 @@ export default function Brands() {
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
       return (data ?? []) as BrandVisit[];
+    },
+    enabled: !!user,
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      return data;
     },
     enabled: !!user,
   });
@@ -482,69 +533,55 @@ export default function Brands() {
                   {/* Expanded details */}
                   {isExpanded && (
                     <div className="border-t border-border px-4 pb-4">
-                      {/* Brand details — all API fields */}
-                       <div className="pt-3 pb-3">
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                          Brand details
-                        </p>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                          {BRAND_API_FIELDS.map(({ label, apiName, getValue }) => {
-                            const val = getValue(brand);
-                            const isLogo = apiName === "logo_emoji";
-                            return (
-                              <div key={apiName}>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                                  {label}
-                                </p>
-                                <p className="text-[9px] font-mono text-muted-foreground/50 mb-0.5">
-                                  {apiName}
-                                </p>
-                                {isLogo ? (
-                                  <p className="text-lg">{val}</p>
-                                ) : val ? (
-                                  <p className="text-xs font-medium tabular-nums">{val}</p>
-                                ) : (
-                                  <p className="text-xs italic text-muted-foreground/50">Not set</p>
-                                )}
-                              </div>
-                            );
-                          })}
-                          <div className="col-span-2">
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Website</p>
-                            <p className="text-[9px] font-mono text-muted-foreground/50 mb-0.5">website_url</p>
-                            {brand.website_url ? (
-                              <a
-                                href={brand.website_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-xs font-medium text-primary hover:underline truncate block"
-                              >
-                                {brand.website_url}
-                              </a>
-                            ) : (
-                              <p className="text-xs italic text-muted-foreground/50">Not set</p>
-                            )}
+                      {/* Comprehensive Loyalty API Fields by section */}
+                      {LOYALTY_SECTIONS.map((section) => {
+                        const fields = LOYALTY_API_FIELDS.filter((f) => f.section === section);
+                        const conn = getLoyaltyConnection(brand.id);
+                        const bVisits = visitsForBrand(brand.id);
+                        const exPts = expiringPointsForBrand(brand.id);
+                        return (
+                          <div key={section} className="pt-3 pb-2">
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                              {section}
+                            </p>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                              {fields.map(({ label, apiName, getValue }) => {
+                                const val = getValue({ brand, conn, profile, visits: bVisits, expiringPts: exPts });
+                                const isLogo = apiName === "logo_emoji";
+                                const isUrl = apiName === "website_url" || apiName === "loyalty_api_url" || apiName === "api_endpoint";
+                                const isFullWidth = isUrl || apiName === "brand_id";
+                                return (
+                                  <div key={apiName} className={isFullWidth ? "col-span-2" : ""}>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                      {label}
+                                    </p>
+                                    <p className="text-[9px] font-mono text-muted-foreground/50 mb-0.5">
+                                      {apiName}
+                                    </p>
+                                    {isLogo ? (
+                                      <p className="text-lg">{val}</p>
+                                    ) : isUrl && val ? (
+                                      <a
+                                        href={String(val)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="text-xs font-medium text-primary hover:underline truncate block"
+                                      >
+                                        {String(val)}
+                                      </a>
+                                    ) : val != null && val !== "" ? (
+                                      <p className="text-xs font-medium tabular-nums">{val}</p>
+                                    ) : (
+                                      <p className="text-xs italic text-muted-foreground/50">Not set</p>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
-                          <div className="col-span-2">
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Loyalty URL</p>
-                            <p className="text-[9px] font-mono text-muted-foreground/50 mb-0.5">loyalty_api_url</p>
-                            {brand.loyalty_api_url ? (
-                              <a
-                                href={brand.loyalty_api_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-xs font-medium text-primary hover:underline truncate block"
-                              >
-                                {brand.loyalty_api_url}
-                              </a>
-                            ) : (
-                              <p className="text-xs italic text-muted-foreground/50">Not set</p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
+                        );
+                      })}
                       {/* Widget display toggles */}
                       <div className="pt-3 border-t border-border">
                         <button
