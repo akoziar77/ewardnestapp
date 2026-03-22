@@ -29,6 +29,8 @@ interface Brand {
   milestone_points: number;
   visit_expiry_months: number;
   website_url: string | null;
+  loyalty_api_url: string | null;
+  loyalty_provider: string | null;
 }
 
 interface BrandVisit {
