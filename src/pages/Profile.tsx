@@ -283,6 +283,18 @@ export default function Profile() {
                     maxLength={2}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="zip" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Zip code
+                  </Label>
+                  <Input
+                    id="zip"
+                    value={formZip}
+                    onChange={(e) => setFormZip(e.target.value)}
+                    placeholder="90210"
+                    maxLength={10}
+                  />
+                </div>
               </div>
               <div className="flex gap-2 pt-1">
                 <Button
