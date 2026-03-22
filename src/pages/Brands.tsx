@@ -244,9 +244,14 @@ export default function Brands() {
 
   const categories = [...new Set(brands.map((b) => b.category).filter(Boolean))] as string[];
 
+  const hiddenCategories = getHiddenCategories();
+
   const filtered = brands
+    .filter((b) => !b.category || !hiddenCategories.includes(b.category))
     .filter((b) => !filter || b.category === filter)
     .filter((b) => !searchQuery || b.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  const visibleCategories = categories.filter((c) => !hiddenCategories.includes(c));
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-20">
