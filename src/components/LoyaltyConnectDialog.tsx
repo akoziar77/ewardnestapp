@@ -69,6 +69,32 @@ export default function LoyaltyConnectDialog({
   onConnectionChange,
 }: Props) {
   const { user } = useAuth();
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name, phone, zip_code")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const registrationUrl = useMemo(() => {
+    if (!loyaltyProvider) return null;
+    const nameParts = (profile?.display_name || "").split(" ");
+    return buildRegistrationUrl(loyaltyProvider, {
+      firstName: nameParts[0] || undefined,
+      lastName: nameParts.slice(1).join(" ") || undefined,
+      email: user?.email || undefined,
+      phone: profile?.phone || undefined,
+      zipCode: profile?.zip_code || undefined,
+    });
+  }, [loyaltyProvider, profile, user?.email]);
   
   // Auto-populate from brand's loyalty_provider
   const initialProvider = loyaltyProvider || "";
