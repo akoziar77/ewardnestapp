@@ -75,6 +75,24 @@ export default function Brands() {
     enabled: !!user,
   });
 
+  const { data: expiringEntries = [] } = useQuery({
+    queryKey: ["expiring-points-brands", user?.id],
+    queryFn: async () => {
+      const now = new Date().toISOString();
+      const nextMonth = new Date();
+      nextMonth.setDate(nextMonth.getDate() + 30);
+      const { data } = await supabase
+        .from("ledger_entries")
+        .select("delta_points, expires_at, metadata")
+        .eq("user_id", user!.id)
+        .eq("type", "brand_milestone")
+        .gt("expires_at", now)
+        .lte("expires_at", nextMonth.toISOString());
+      return data ?? [];
+    },
+    enabled: !!user,
+  });
+
   const logVisitMutation = useMutation({
     mutationFn: async (brandId: string) => {
       const { error } = await supabase.from("brand_visits").insert({
@@ -182,6 +200,12 @@ export default function Brands() {
     ).length;
   };
 
+  const expiringPointsForBrand = (brandId: string) => {
+    return expiringEntries
+      .filter((e: any) => (e.metadata as any)?.brand_id === brandId)
+      .reduce((sum: number, e: any) => sum + e.delta_points, 0);
+  };
+
   const categories = [...new Set(brands.map((b) => b.category).filter(Boolean))] as string[];
 
   const filtered = filter
@@ -253,6 +277,7 @@ export default function Brands() {
               const brandVisits = visitsForBrand(brand.id);
               const isFavorite = favoriteIds.includes(brand.id);
               const expiring = expiringVisitsNextMonth(brand.id);
+              const expiringPts = expiringPointsForBrand(brand.id);
 
               return (
                 <div
@@ -315,6 +340,11 @@ export default function Brands() {
                       {expiring > 0 && (
                         <p className="mt-1 text-[10px] text-destructive font-medium">
                           ⚠ {expiring} visit{expiring > 1 ? "s" : ""} expiring next month
+                        </p>
+                      )}
+                      {expiringPts > 0 && (
+                        <p className="mt-0.5 text-[10px] text-destructive font-medium">
+                          ⚠ {expiringPts} pts expiring next month
                         </p>
                       )}
                     </div>
