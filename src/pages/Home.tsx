@@ -63,10 +63,10 @@ export default function Home() {
           <h1 className="text-xl font-bold tracking-tight">{greeting}</h1>
         </div>
         <button
-          onClick={signOut}
+          onClick={() => navigate("/profile")}
           className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:text-foreground active:scale-95"
         >
-          <LogOut className="h-5 w-5" />
+          <UserCircle className="h-5 w-5" />
         </button>
       </header>
 
