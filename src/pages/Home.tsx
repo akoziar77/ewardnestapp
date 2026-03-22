@@ -10,9 +10,16 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import {
   LOYALTY_API_FIELDS,
+  LOYALTY_SECTIONS,
+  getFieldsForBrand,
+  getBrandFieldOverride,
+  setBrandFieldOverride,
+  clearBrandFieldOverride,
+  hasBrandFieldOverride,
   getVisibleWidgetFields,
   type FieldContext,
 } from "@/lib/widgetFields";
+import { Switch } from "@/components/ui/switch";
 import { getWidgetLayout, saveWidgetLayout, type HomeWidget } from "@/lib/homeWidgets";
 import HomeWidgetEditor from "@/components/HomeWidgetEditor";
 import {
