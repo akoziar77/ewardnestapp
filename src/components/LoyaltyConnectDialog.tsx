@@ -351,6 +351,23 @@ export default function LoyaltyConnectDialog({
                       />
                     </div>
                   </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Password
+                    </Label>
+                    <div className="relative">
+                      <Key className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        type="password"
+                        value={editPassword}
+                        onChange={(e) => setEditPassword(e.target.value)}
+                        placeholder="Update password (leave blank to keep)"
+                        className="pl-10"
+                        maxLength={200}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex gap-2">
