@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
@@ -6,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { QrCode, Gift, TrendingUp, History, UserCircle, Store, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 
 export default function Home() {
   const { user } = useAuth();
@@ -119,6 +121,24 @@ export default function Home() {
       .filter((e: any) => (e.metadata as any)?.brand_id === brandId)
       .reduce((sum: number, e: any) => sum + e.delta_points, 0);
   };
+
+  // Show toast notification for expiring points (once per session)
+  const toastShown = useRef(false);
+  useEffect(() => {
+    if (toastShown.current || expiringEntries.length === 0) return;
+    const totalExpiring = expiringEntries.reduce((sum: number, e: any) => sum + e.delta_points, 0);
+    if (totalExpiring > 0) {
+      toastShown.current = true;
+      toast.warning(`⏰ ${totalExpiring} points expiring in the next 30 days`, {
+        description: "Visit your favorite brands to earn more before they expire!",
+        duration: 8000,
+        action: {
+          label: "View Brands",
+          onClick: () => navigate("/brands"),
+        },
+      });
+    }
+  }, [expiringEntries, navigate]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-20">
