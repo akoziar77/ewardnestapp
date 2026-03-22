@@ -131,9 +131,9 @@ export default function Brands() {
     queryFn: async () => {
       const { data } = await supabase
         .from("brands")
-        .select("*")
+        .select("*, brand_locations(id, name, latitude, longitude, geofence_radius_meters, city, state)")
         .order("name");
-      return (data ?? []) as BrandData[];
+      return (data ?? []) as (BrandData & { brand_locations?: any[] })[];
     },
     enabled: !!user,
   });
