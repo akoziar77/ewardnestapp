@@ -25,6 +25,7 @@ interface Brand {
   category: string | null;
   milestone_visits: number;
   milestone_points: number;
+  visit_expiry_months: number;
 }
 
 interface BrandVisit {
