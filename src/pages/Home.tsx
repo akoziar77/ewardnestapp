@@ -483,6 +483,132 @@ export default function Home() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Favorite brand choice dialog */}
+      <Dialog open={!!favChoiceBrand} onOpenChange={(open) => !open && setFavChoiceBrand(null)}>
+        <DialogContent className="max-w-xs rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-base flex items-center gap-2">
+              <span className="text-xl">{favChoiceBrand?.logo_emoji}</span>
+              {favChoiceBrand?.name}
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* Show currently displayed widget fields */}
+          {favChoiceBrand && (() => {
+            const visibleFields = getVisibleWidgetFields();
+            const count = visitCountForBrand(favChoiceBrand.id);
+            const extConn = loyaltyConnections.find((c: any) => c.brand_id === favChoiceBrand.id);
+            const extPts = extConn?.external_points_balance ?? 0;
+            const expPts = expiringPointsForBrand(favChoiceBrand.id);
+            return (
+              <div className="space-y-1.5 rounded-xl bg-muted/50 p-3 text-xs">
+                {visibleFields.includes("category") && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Category</span>
+                    <span className="font-medium">{favChoiceBrand.category || "—"}</span>
+                  </div>
+                )}
+                {visibleFields.includes("progress") && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Visits</span>
+                    <span className="font-medium tabular-nums">{count}/{favChoiceBrand.milestone_visits}</span>
+                  </div>
+                )}
+                {visibleFields.includes("milestonePoints") && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Milestone</span>
+                    <span className="font-medium tabular-nums">{favChoiceBrand.milestone_points} pts</span>
+                  </div>
+                )}
+                {visibleFields.includes("loyaltyProvider") && favChoiceBrand.loyalty_provider && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Program</span>
+                    <span className="font-medium">{favChoiceBrand.loyalty_provider}</span>
+                  </div>
+                )}
+                {visibleFields.includes("visitExpiry") && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Visit expiry</span>
+                    <span className="font-medium">{favChoiceBrand.visit_expiry_months}mo</span>
+                  </div>
+                )}
+                {visibleFields.includes("externalPoints") && extPts > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">External pts</span>
+                    <span className="font-medium tabular-nums">{extPts.toLocaleString()}</span>
+                  </div>
+                )}
+                {visibleFields.includes("expiringPoints") && expPts > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Expiring</span>
+                    <span className="font-medium text-destructive tabular-nums">{expPts} pts</span>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          <div className="space-y-2 pt-1">
+            {favChoiceBrand?.loyalty_api_url && (
+              <button
+                onClick={() => {
+                  window.open(favChoiceBrand.loyalty_api_url, "_blank", "noopener");
+                  setFavChoiceBrand(null);
+                }}
+                className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-all hover:shadow-sm active:scale-[0.97]"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                  <Smartphone className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">Open app</p>
+                  <p className="text-[11px] text-muted-foreground">Launch the loyalty program</p>
+                </div>
+              </button>
+            )}
+            {favChoiceBrand?.website_url && (
+              <button
+                onClick={() => {
+                  window.open(favChoiceBrand.website_url, "_blank", "noopener");
+                  setFavChoiceBrand(null);
+                }}
+                className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-all hover:shadow-sm active:scale-[0.97]"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                  <Globe className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">Visit website</p>
+                  <p className="text-[11px] text-muted-foreground">{favChoiceBrand.website_url}</p>
+                </div>
+              </button>
+            )}
+            <button
+              onClick={() => {
+                navigate(`/brands?brand=${favChoiceBrand?.id}`);
+                setFavChoiceBrand(null);
+              }}
+              className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-all hover:shadow-sm active:scale-[0.97]"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
+                <Store className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">View brand</p>
+                <p className="text-[11px] text-muted-foreground">See full details</p>
+              </div>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <HomeWidgetEditor
+        open={editorOpen}
+        onOpenChange={setEditorOpen}
+        widgets={widgetLayout}
+        onSave={handleSaveLayout}
+      />
       <BottomNav />
     </div>
   );
