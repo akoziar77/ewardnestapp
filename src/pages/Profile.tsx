@@ -40,6 +40,7 @@ import {
   Crown,
   FileText,
   Settings,
+  Store,
 } from "lucide-react";
 import { requestNotificationPermission } from "@/hooks/useGeofence";
 import { hasFeatureAccess } from "@/lib/featureGates";
