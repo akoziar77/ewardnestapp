@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { QrCode, Gift, TrendingUp, History, UserCircle, Store, Heart, Sparkles, Link2, ExternalLink, Globe, CalendarClock, Smartphone, Pencil, Settings, RotateCcw, Download, MapPin, UserPlus } from "lucide-react";
 import { getProviderLinks, getOpenAppUrl, getProviderLink, buildRegistrationUrl } from "@/lib/providerDeepLinks";
+import { autoConnectOnRegister } from "@/lib/autoConnectOnRegister";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";

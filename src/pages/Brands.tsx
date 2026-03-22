@@ -833,16 +833,22 @@ export default function Brands() {
                           });
                           if (!regUrl) return null;
                           return (
-                            <a
-                              href={regUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
+                            <button
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                await autoConnectOnRegister({
+                                  brandId: brand.id,
+                                  providerName: brand.loyalty_provider!,
+                                  registrationUrl: regUrl,
+                                });
+                                queryClient.invalidateQueries({ queryKey: ["external-loyalty"] });
+                                toast.success(`Connected to ${brand.loyalty_provider}`);
+                              }}
                               className="flex items-center gap-1.5 text-xs font-medium text-primary-foreground bg-primary rounded-lg px-2.5 py-1 hover:bg-primary/90 active:scale-[0.97] transition-colors"
                             >
                               <UserPlus className="h-3 w-3" />
                               Register for {brand.loyalty_provider}
-                            </a>
+                            </button>
                           );
                         })()}
                       </div>
