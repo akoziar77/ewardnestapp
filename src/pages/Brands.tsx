@@ -33,7 +33,19 @@ interface Brand {
   website_url: string | null;
   loyalty_api_url: string | null;
   loyalty_provider: string | null;
+  api_field_name: string | null;
 }
+
+// Mapping of brand fields to their raw API (database) column names
+const BRAND_API_FIELDS: { label: string; apiName: string; getValue: (b: Brand) => React.ReactNode }[] = [
+  { label: "Category", apiName: "category", getValue: (b) => b.category },
+  { label: "Loyalty Program", apiName: "loyalty_provider", getValue: (b) => b.loyalty_provider },
+  { label: "Milestone Visits", apiName: "milestone_visits", getValue: (b) => b.milestone_visits },
+  { label: "Milestone Points", apiName: "milestone_points", getValue: (b) => b.milestone_points },
+  { label: "Visit Expiry", apiName: "visit_expiry_months", getValue: (b) => `${b.visit_expiry_months} months` },
+  { label: "Logo", apiName: "logo_emoji", getValue: (b) => b.logo_emoji },
+  { label: "API Field Name", apiName: "api_field_name", getValue: (b) => b.api_field_name },
+];
 
 interface BrandVisit {
   id: string;
