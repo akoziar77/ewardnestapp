@@ -75,6 +75,24 @@ export default function Brands() {
     enabled: !!user,
   });
 
+  const { data: expiringEntries = [] } = useQuery({
+    queryKey: ["expiring-points-brands", user?.id],
+    queryFn: async () => {
+      const now = new Date().toISOString();
+      const nextMonth = new Date();
+      nextMonth.setDate(nextMonth.getDate() + 30);
+      const { data } = await supabase
+        .from("ledger_entries")
+        .select("delta_points, expires_at, metadata")
+        .eq("user_id", user!.id)
+        .eq("type", "brand_milestone")
+        .gt("expires_at", now)
+        .lte("expires_at", nextMonth.toISOString());
+      return data ?? [];
+    },
+    enabled: !!user,
+  });
+
   const logVisitMutation = useMutation({
     mutationFn: async (brandId: string) => {
       const { error } = await supabase.from("brand_visits").insert({
