@@ -97,10 +97,11 @@ export default function Home() {
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
           Quick actions
         </h2>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-4 gap-3">
           {[
             { icon: QrCode, label: "Scan", color: "bg-primary/10 text-primary", onClick: () => navigate("/scan") },
             { icon: Gift, label: "Rewards", color: "bg-secondary/10 text-secondary", onClick: () => navigate("/rewards") },
+            { icon: Store, label: "Brands", color: "bg-primary/10 text-primary", onClick: () => navigate("/brands") },
             { icon: History, label: "History", color: "bg-muted text-muted-foreground", onClick: () => navigate("/history") },
           ].map(({ icon: Icon, label, color, onClick }) => (
             <button
