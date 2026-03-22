@@ -3,8 +3,9 @@ import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { QrCode, Gift, TrendingUp, History, UserCircle, Store } from "lucide-react";
+import { QrCode, Gift, TrendingUp, History, UserCircle, Store, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 
 export default function Home() {
   const { user } = useAuth();
@@ -37,6 +38,36 @@ export default function Home() {
     enabled: !!user,
   });
 
+  const { data: favoriteBrands = [] } = useQuery({
+    queryKey: ["favorite-brands-home", user?.id],
+    queryFn: async () => {
+      const { data: favs } = await supabase
+        .from("favorite_brands")
+        .select("brand_id")
+        .eq("user_id", user!.id);
+      if (!favs?.length) return [];
+      const brandIds = favs.map((f: any) => f.brand_id);
+      const { data: brands } = await supabase
+        .from("brands")
+        .select("*")
+        .in("id", brandIds);
+      return brands ?? [];
+    },
+    enabled: !!user,
+  });
+
+  const { data: brandVisits = [] } = useQuery({
+    queryKey: ["brand-visits", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("brand_visits")
+        .select("brand_id")
+        .eq("user_id", user!.id);
+      return data ?? [];
+    },
+    enabled: !!user,
+  });
+
   // Compute total points from latest balance per merchant
   const totalPoints = (() => {
     if (!recentEntries?.length) return 0;
@@ -53,6 +84,9 @@ export default function Home() {
   const greeting = profile?.display_name
     ? `Hey, ${profile.display_name}`
     : "Hey there";
+
+  const visitCountForBrand = (brandId: string) =>
+    brandVisits.filter((v: any) => v.brand_id === brandId).length;
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-20">
@@ -117,6 +151,51 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* Favorite brands */}
+      {favoriteBrands.length > 0 && (
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <Heart className="h-3.5 w-3.5 fill-destructive text-destructive" />
+              Favorite brands
+            </h2>
+            <button
+              onClick={() => navigate("/brands")}
+              className="text-xs font-medium text-primary active:scale-95"
+            >
+              View all
+            </button>
+          </div>
+          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+            {favoriteBrands.map((brand: any) => {
+              const count = visitCountForBrand(brand.id);
+              const progress = Math.min(
+                (count / brand.milestone_visits) * 100,
+                100
+              );
+              return (
+                <button
+                  key={brand.id}
+                  onClick={() => navigate("/brands")}
+                  className="flex shrink-0 w-32 flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-sm active:scale-[0.96]"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-2xl">
+                    {brand.logo_emoji}
+                  </div>
+                  <p className="text-xs font-semibold truncate w-full text-center">
+                    {brand.name}
+                  </p>
+                  <Progress value={progress} className="h-1 w-full" />
+                  <p className="text-[10px] tabular-nums text-muted-foreground">
+                    {count}/{brand.milestone_visits}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Recent activity or empty state */}
       {hasActivity ? (
