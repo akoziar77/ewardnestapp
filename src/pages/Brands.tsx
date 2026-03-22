@@ -262,12 +262,18 @@ export default function Brands() {
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-xl font-bold tracking-tight">Brands</h1>
           <p className="text-sm text-muted-foreground">
             Track visits to earn milestone rewards
           </p>
         </div>
+        <button
+          onClick={() => navigate("/brands/settings")}
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:text-foreground active:scale-95"
+        >
+          <Settings className="h-5 w-5" />
+        </button>
       </header>
 
       {/* Search bar */}
