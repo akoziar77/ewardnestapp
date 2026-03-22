@@ -17,7 +17,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  ArrowLeft, Plus, GripVertical, Pencil, Trash2, ArrowUp, ArrowDown,
+  ArrowLeft, Plus, GripVertical, Pencil, Trash2, ArrowUp, ArrowDown, Copy,
   Bird, Gift, Sparkles, Bell, QrCode, Star, Heart, Zap, Shield, MapPin,
   Trophy, Crown, Flame, Target, Rocket, Eye, EyeOff, type LucideIcon,
 } from "lucide-react";
