@@ -34,6 +34,12 @@ export default function Profile() {
   const [editing, setEditing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() =>
+    localStorage.getItem("notifications_enabled") !== "false"
+  );
+  const [geofenceEnabled, setGeofenceEnabled] = useState(() =>
+    localStorage.getItem("geofence_enabled") === "true"
+  );
   const { theme, setTheme } = useTheme();
 
   const { data: profile, isLoading } = useQuery({
