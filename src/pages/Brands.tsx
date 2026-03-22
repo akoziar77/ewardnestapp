@@ -401,6 +401,7 @@ export default function Brands() {
               return (
                 <div
                   key={brand.id}
+                  ref={(el) => { brandCardRefs.current[brand.id] = el; }}
                   className="rounded-2xl border border-border bg-card transition-shadow hover:shadow-sm overflow-hidden"
                 >
                   {/* Card header — tappable */}
