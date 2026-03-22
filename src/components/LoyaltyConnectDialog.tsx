@@ -11,8 +11,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { Link2, Unlink, RefreshCw, Key, Globe, User } from "lucide-react";
+
+const LOYALTY_PRESETS = [
+  { name: "Starbucks Rewards", endpoint: "https://api.starbucks.com/loyalty/v1/balance" },
+  { name: "Delta SkyMiles", endpoint: "https://api.delta.com/loyalty/v1/balance" },
+  { name: "Marriott Bonvoy", endpoint: "https://api.marriott.com/loyalty/v1/balance" },
+  { name: "United MileagePlus", endpoint: "https://api.united.com/loyalty/v1/balance" },
+  { name: "Hilton Honors", endpoint: "https://api.hilton.com/loyalty/v1/balance" },
+  { name: "Southwest Rapid Rewards", endpoint: "https://api.southwest.com/loyalty/v1/balance" },
+  { name: "AMC Stubs", endpoint: "https://api.amctheatres.com/loyalty/v1/balance" },
+  { name: "Sephora Beauty Insider", endpoint: "https://api.sephora.com/loyalty/v1/balance" },
+] as const;
 
 interface LoyaltyConnection {
   id: string;
@@ -46,6 +64,7 @@ export default function LoyaltyConnectDialog({
 }: Props) {
   const { user } = useAuth();
   const [providerName, setProviderName] = useState("");
+  const [isCustomProvider, setIsCustomProvider] = useState(false);
   const [apiEndpoint, setApiEndpoint] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [memberId, setMemberId] = useState("");
@@ -140,6 +159,7 @@ export default function LoyaltyConnectDialog({
 
   const resetForm = () => {
     setProviderName("");
+    setIsCustomProvider(false);
     setApiEndpoint("");
     setAccessToken("");
     setMemberId("");
@@ -240,17 +260,46 @@ export default function LoyaltyConnectDialog({
           <div className="space-y-4 pt-2">
             <div className="space-y-2">
               <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Program name *
+                Loyalty program *
               </Label>
-              <div className="relative">
-                <Link2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={providerName}
-                  onChange={(e) => setProviderName(e.target.value)}
-                  placeholder="e.g. Starbucks Rewards"
-                  className="pl-10"
-                />
-              </div>
+              <Select
+                value={isCustomProvider ? "__custom__" : providerName}
+                onValueChange={(val) => {
+                  if (val === "__custom__") {
+                    setIsCustomProvider(true);
+                    setProviderName("");
+                    setApiEndpoint("");
+                  } else {
+                    setIsCustomProvider(false);
+                    setProviderName(val);
+                    const preset = LOYALTY_PRESETS.find((p) => p.name === val);
+                    if (preset) setApiEndpoint(preset.endpoint);
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a program…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {LOYALTY_PRESETS.map((p) => (
+                    <SelectItem key={p.name} value={p.name}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="__custom__">Other (custom)</SelectItem>
+                </SelectContent>
+              </Select>
+              {isCustomProvider && (
+                <div className="relative">
+                  <Link2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={providerName}
+                    onChange={(e) => setProviderName(e.target.value)}
+                    placeholder="Enter program name"
+                    className="pl-10"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
