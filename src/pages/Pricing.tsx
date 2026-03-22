@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { TIERS, type TierKey } from "@/lib/subscriptionTiers";
+import { FEATURE_GATES } from "@/lib/featureGates";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Loader2, Crown, Rocket, Building2, ExternalLink } from "lucide-react";
+import { Check, X, Loader2, Crown, Rocket, Building2, ExternalLink, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import BottomNav from "@/components/BottomNav";
-import { useNavigate } from "react-router-dom";
 
 const tierIcons: Record<TierKey, React.ReactNode> = {
   free: <Rocket className="h-6 w-6" />,
@@ -31,9 +32,7 @@ export default function Pricing() {
         body: { priceId },
       });
       if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
+      if (data?.url) window.open(data.url, "_blank");
     } catch {
       toast.error("Failed to start checkout");
     } finally {
@@ -46,9 +45,7 @@ export default function Pricing() {
     try {
       const { data, error } = await supabase.functions.invoke("customer-portal");
       if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      }
+      if (data?.url) window.open(data.url, "_blank");
     } catch {
       toast.error("Failed to open subscription management");
     } finally {
@@ -66,14 +63,24 @@ export default function Pricing() {
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Choose Your Plan</h1>
-          <p className="text-muted-foreground text-balance max-w-md mx-auto">
-            Unlock premium features and get the most out of your loyalty rewards
-          </p>
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:text-foreground active:scale-95"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Plans & Pricing</h1>
+            <p className="text-sm text-muted-foreground">
+              Unlock premium features for your loyalty rewards
+            </p>
+          </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        {/* Tier cards */}
+        <div className="grid gap-6 md:grid-cols-3 mb-12">
           {tierOrder.map((key) => {
             const tier = TIERS[key];
             const isCurrent = subscriptionTier === key;
@@ -115,14 +122,7 @@ export default function Pricing() {
                   {isPaid && <span className="text-sm text-muted-foreground">/mo</span>}
                 </div>
 
-                <ul className="space-y-3 mb-8 flex-1">
-                  {tier.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm">
-                      <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="flex-1" />
 
                 {isCurrent ? (
                   isSubscribed ? (
@@ -165,6 +165,55 @@ export default function Pricing() {
               </div>
             );
           })}
+        </div>
+
+        {/* Feature comparison table */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold tracking-tight">Feature Comparison</h2>
+          <div className="rounded-2xl border border-border overflow-hidden">
+            {/* Table header */}
+            <div className="grid grid-cols-[1fr_80px_80px_80px] md:grid-cols-[1fr_120px_120px_120px] bg-muted/50 border-b border-border px-4 py-3">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Feature</span>
+              {tierOrder.map((key) => (
+                <span
+                  key={key}
+                  className={`text-xs font-semibold uppercase tracking-wider text-center ${
+                    subscriptionTier === key ? "text-primary" : "text-muted-foreground"
+                  }`}
+                >
+                  {TIERS[key].name}
+                </span>
+              ))}
+            </div>
+
+            {/* Feature rows */}
+            {FEATURE_GATES.map((gate, i) => (
+              <div
+                key={gate.key}
+                className={`grid grid-cols-[1fr_80px_80px_80px] md:grid-cols-[1fr_120px_120px_120px] items-center px-4 py-3 ${
+                  i < FEATURE_GATES.length - 1 ? "border-b border-border" : ""
+                } ${i % 2 === 0 ? "bg-background" : "bg-muted/20"}`}
+              >
+                <div>
+                  <p className="text-sm font-medium">{gate.label}</p>
+                  <p className="text-xs text-muted-foreground hidden md:block">{gate.description}</p>
+                </div>
+                {tierOrder.map((tier) => (
+                  <div key={tier} className="flex justify-center">
+                    {gate[tier] ? (
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
+                        <Check className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                    ) : (
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
+                        <X className="h-3.5 w-3.5 text-muted-foreground/50" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
 
         {isSubscribed && (
