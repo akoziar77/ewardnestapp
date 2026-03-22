@@ -83,6 +83,10 @@ export default function Brands() {
     }
   }, [user, loading, navigate]);
 
+  // Auto-scroll to brand from query param
+  const brandCardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const scrolledToParam = useRef(false);
+
   const { data: brands = [], isLoading: loadingBrands } = useQuery({
     queryKey: ["brands"],
     queryFn: async () => {
@@ -94,6 +98,16 @@ export default function Brands() {
     },
     enabled: !!user,
   });
+
+  // Scroll to brand from query param once brands are loaded
+  useEffect(() => {
+    const brandParam = searchParams.get("brand");
+    if (!brandParam || scrolledToParam.current || !brands.length) return;
+    scrolledToParam.current = true;
+    setTimeout(() => {
+      brandCardRefs.current[brandParam]?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
+  }, [searchParams, brands]);
 
   const { data: visits = [] } = useQuery({
     queryKey: ["brand-visits", user?.id],
@@ -387,6 +401,7 @@ export default function Brands() {
               return (
                 <div
                   key={brand.id}
+                  ref={(el) => { brandCardRefs.current[brand.id] = el; }}
                   className="rounded-2xl border border-border bg-card transition-shadow hover:shadow-sm overflow-hidden"
                 >
                   {/* Card header — tappable */}
