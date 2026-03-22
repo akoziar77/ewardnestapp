@@ -11,8 +11,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { Link2, Unlink, RefreshCw, Key, Globe, User } from "lucide-react";
+
+const LOYALTY_PRESETS = [
+  { name: "Starbucks Rewards", endpoint: "https://api.starbucks.com/loyalty/v1/balance" },
+  { name: "Delta SkyMiles", endpoint: "https://api.delta.com/loyalty/v1/balance" },
+  { name: "Marriott Bonvoy", endpoint: "https://api.marriott.com/loyalty/v1/balance" },
+  { name: "United MileagePlus", endpoint: "https://api.united.com/loyalty/v1/balance" },
+  { name: "Hilton Honors", endpoint: "https://api.hilton.com/loyalty/v1/balance" },
+  { name: "Southwest Rapid Rewards", endpoint: "https://api.southwest.com/loyalty/v1/balance" },
+  { name: "AMC Stubs", endpoint: "https://api.amctheatres.com/loyalty/v1/balance" },
+  { name: "Sephora Beauty Insider", endpoint: "https://api.sephora.com/loyalty/v1/balance" },
+] as const;
 
 interface LoyaltyConnection {
   id: string;
