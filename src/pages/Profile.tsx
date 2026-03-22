@@ -242,6 +242,45 @@ export default function Profile() {
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="address" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Address
+                </Label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="address"
+                    value={formAddress}
+                    onChange={(e) => setFormAddress(e.target.value)}
+                    className="pl-10"
+                    placeholder="123 Main St"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="city" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    City
+                  </Label>
+                  <Input
+                    id="city"
+                    value={formCity}
+                    onChange={(e) => setFormCity(e.target.value)}
+                    placeholder="City"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="state" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    State
+                  </Label>
+                  <Input
+                    id="state"
+                    value={formState}
+                    onChange={(e) => setFormState(e.target.value)}
+                    placeholder="CA"
+                    maxLength={2}
+                  />
+                </div>
               <div className="flex gap-2 pt-1">
                 <Button
                   variant="outline"
