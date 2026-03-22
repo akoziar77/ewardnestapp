@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -30,7 +30,35 @@ import {
   type BrandData,
   type BrandVisitData,
 } from "@/lib/widgetFields";
-import BrandMapView from "@/components/BrandMapView";
+
+const BrandMapView = lazy(() => import("@/components/BrandMapView"));
+
+class MapErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: string }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: "" };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error: error.message };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center justify-center h-[420px] rounded-2xl bg-muted">
+          <div className="text-center px-6">
+            <p className="text-2xl mb-2">🗺️</p>
+            <p className="text-sm font-medium text-foreground">Map unavailable</p>
+            <p className="text-xs text-muted-foreground mt-1">{this.state.error}</p>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export default function Brands() {
   const { user, loading } = useAuth();
@@ -427,23 +455,27 @@ export default function Brands() {
       {/* Map view */}
       {viewMode === "map" && (
         <div className="px-6 py-2">
-          <BrandMapView
-            brands={filtered.map((b) => ({
-              id: b.id,
-              name: b.name,
-              logo_emoji: b.logo_emoji,
-              latitude: (b as any).latitude,
-              longitude: (b as any).longitude,
-              geofence_radius_meters: (b as any).geofence_radius_meters ?? 200,
-              category: b.category,
-              milestone_visits: b.milestone_visits,
-              milestone_points: b.milestone_points,
-            }))}
-            onBrandClick={(id) => {
-              setViewMode("list");
-              setExpandedBrandId(id);
-            }}
-          />
+          <MapErrorBoundary>
+            <Suspense fallback={<div className="flex items-center justify-center h-[420px] rounded-2xl bg-muted"><p className="text-sm text-muted-foreground">Loading map…</p></div>}>
+              <BrandMapView
+                brands={filtered.map((b) => ({
+                  id: b.id,
+                  name: b.name,
+                  logo_emoji: b.logo_emoji,
+                  latitude: (b as any).latitude,
+                  longitude: (b as any).longitude,
+                  geofence_radius_meters: (b as any).geofence_radius_meters ?? 200,
+                  category: b.category,
+                  milestone_visits: b.milestone_visits,
+                  milestone_points: b.milestone_points,
+                }))}
+                onBrandClick={(id) => {
+                  setViewMode("list");
+                  setExpandedBrandId(id);
+                }}
+              />
+            </Suspense>
+          </MapErrorBoundary>
         </div>
       )}
 
