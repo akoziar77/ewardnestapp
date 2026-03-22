@@ -17,7 +17,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  ArrowLeft, Plus, GripVertical, Pencil, Trash2, ArrowUp, ArrowDown,
+  ArrowLeft, Plus, GripVertical, Pencil, Trash2, ArrowUp, ArrowDown, Copy,
   Bird, Gift, Sparkles, Bell, QrCode, Star, Heart, Zap, Shield, MapPin,
   Trophy, Crown, Flame, Target, Rocket, Eye, EyeOff, type LucideIcon,
 } from "lucide-react";
@@ -253,6 +253,22 @@ export default function AdminOnboarding() {
                       <Button variant="ghost" size="icon" className="h-8 w-8"
                         onClick={(e) => { e.stopPropagation(); openEdit(step); }}>
                         <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8"
+                        title="Duplicate step"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsNew(true);
+                          upsert.mutate({
+                            title: step.title + " (copy)",
+                            description: step.description,
+                            icon_name: step.icon_name,
+                            color_class: step.color_class,
+                            step_type: step.step_type,
+                            active: step.active,
+                          });
+                        }}>
+                        <Copy className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive"
                         onClick={(e) => { e.stopPropagation(); setDeleting(step); }}>
