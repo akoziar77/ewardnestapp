@@ -25,6 +25,7 @@ interface Brand {
   category: string | null;
   milestone_visits: number;
   milestone_points: number;
+  visit_expiry_months: number;
 }
 
 interface BrandVisit {
@@ -150,11 +151,36 @@ export default function Brands() {
 
   if (loading || !user) return null;
 
-  const visitCountForBrand = (brandId: string) =>
-    visits.filter((v) => v.brand_id === brandId).length;
+  const getExpiryDate = (brand: Brand) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - brand.visit_expiry_months);
+    return d;
+  };
 
-  const visitsForBrand = (brandId: string) =>
-    visits.filter((v) => v.brand_id === brandId);
+  const visitCountForBrand = (brandId: string) => {
+    const brand = brands.find((b) => b.id === brandId);
+    if (!brand) return 0;
+    const cutoff = getExpiryDate(brand);
+    return visits.filter((v) => v.brand_id === brandId && new Date(v.created_at) > cutoff).length;
+  };
+
+  const visitsForBrand = (brandId: string) => {
+    const brand = brands.find((b) => b.id === brandId);
+    if (!brand) return visits.filter((v) => v.brand_id === brandId);
+    const cutoff = getExpiryDate(brand);
+    return visits.filter((v) => v.brand_id === brandId && new Date(v.created_at) > cutoff);
+  };
+
+  const expiringVisitsNextMonth = (brandId: string) => {
+    const brand = brands.find((b) => b.id === brandId);
+    if (!brand) return 0;
+    const cutoff = getExpiryDate(brand);
+    const nextMonthCutoff = new Date(cutoff);
+    nextMonthCutoff.setMonth(nextMonthCutoff.getMonth() + 1);
+    return visits.filter(
+      (v) => v.brand_id === brandId && new Date(v.created_at) > cutoff && new Date(v.created_at) <= nextMonthCutoff
+    ).length;
+  };
 
   const categories = [...new Set(brands.map((b) => b.category).filter(Boolean))] as string[];
 
@@ -226,6 +252,7 @@ export default function Brands() {
               const isExpanded = expandedBrandId === brand.id;
               const brandVisits = visitsForBrand(brand.id);
               const isFavorite = favoriteIds.includes(brand.id);
+              const expiring = expiringVisitsNextMonth(brand.id);
 
               return (
                 <div
@@ -285,6 +312,11 @@ export default function Brands() {
                           {count}/{brand.milestone_visits}
                         </span>
                       </div>
+                      {expiring > 0 && (
+                        <p className="mt-1 text-[10px] text-destructive font-medium">
+                          ⚠ {expiring} visit{expiring > 1 ? "s" : ""} expiring next month
+                        </p>
+                      )}
                     </div>
                   </button>
 

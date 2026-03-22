@@ -61,8 +61,27 @@ export default function Home() {
     queryFn: async () => {
       const { data } = await supabase
         .from("brand_visits")
-        .select("brand_id")
+        .select("brand_id, created_at")
         .eq("user_id", user!.id);
+      return data ?? [];
+    },
+    enabled: !!user,
+  });
+
+  // Fetch ledger entries expiring within next 30 days per brand
+  const { data: expiringEntries = [] } = useQuery({
+    queryKey: ["expiring-points", user?.id],
+    queryFn: async () => {
+      const now = new Date().toISOString();
+      const nextMonth = new Date();
+      nextMonth.setDate(nextMonth.getDate() + 30);
+      const { data } = await supabase
+        .from("ledger_entries")
+        .select("delta_points, expires_at, metadata")
+        .eq("user_id", user!.id)
+        .eq("type", "brand_milestone")
+        .gt("expires_at", now)
+        .lte("expires_at", nextMonth.toISOString());
       return data ?? [];
     },
     enabled: !!user,
@@ -85,8 +104,21 @@ export default function Home() {
     ? `Hey, ${profile.display_name}`
     : "Hey there";
 
-  const visitCountForBrand = (brandId: string) =>
-    brandVisits.filter((v: any) => v.brand_id === brandId).length;
+  const visitCountForBrand = (brandId: string) => {
+    const brand = favoriteBrands.find((b: any) => b.id === brandId);
+    const expiryMonths = brand?.visit_expiry_months ?? 6;
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - expiryMonths);
+    return brandVisits.filter(
+      (v: any) => v.brand_id === brandId && new Date(v.created_at) > cutoff
+    ).length;
+  };
+
+  const expiringPointsForBrand = (brandId: string) => {
+    return expiringEntries
+      .filter((e: any) => (e.metadata as any)?.brand_id === brandId)
+      .reduce((sum: number, e: any) => sum + e.delta_points, 0);
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-20">
@@ -174,11 +206,12 @@ export default function Home() {
                 (count / brand.milestone_visits) * 100,
                 100
               );
+              const expPts = expiringPointsForBrand(brand.id);
               return (
                 <button
                   key={brand.id}
                   onClick={() => navigate("/brands")}
-                  className="flex shrink-0 w-32 flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-sm active:scale-[0.96]"
+                  className="flex shrink-0 w-32 flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-sm active:scale-[0.96]"
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-2xl">
                     {brand.logo_emoji}
@@ -193,6 +226,11 @@ export default function Home() {
                   <p className="text-[10px] font-semibold text-primary">
                     {brand.milestone_points} pts
                   </p>
+                  {expPts > 0 && (
+                    <p className="text-[9px] font-medium text-destructive leading-tight text-center">
+                      ⚠ {expPts} pts expiring soon
+                    </p>
+                  )}
                 </button>
               );
             })}
