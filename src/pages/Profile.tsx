@@ -41,6 +41,7 @@ import {
   FileText,
   Settings,
   Store,
+  Layout,
 } from "lucide-react";
 import { requestNotificationPermission } from "@/hooks/useGeofence";
 import { hasFeatureAccess } from "@/lib/featureGates";
@@ -455,6 +456,16 @@ export default function Profile() {
                     <div className="flex items-center gap-3">
                       <Settings className="h-5 w-5 text-primary shrink-0" />
                       <p className="text-sm font-medium text-primary">Admin — Onboarding Flow</p>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                  <button
+                    onClick={() => navigate("/admin/pages")}
+                    className="flex w-full items-center justify-between p-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Layout className="h-5 w-5 text-primary shrink-0" />
+                      <p className="text-sm font-medium text-primary">Admin — Page Directory</p>
                     </div>
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   </button>
