@@ -522,16 +522,23 @@ export default function Home() {
                           <p className="text-[11px] text-muted-foreground truncate">{brand.loyalty_provider}</p>
                         </div>
                         {regUrl ? (
-                          <a
-                            href={regUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
+                          <button
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              await autoConnectOnRegister({
+                                brandId: brand.id,
+                                providerName: brand.loyalty_provider!,
+                                registrationUrl: regUrl,
+                              });
+                              queryClient.invalidateQueries({ queryKey: ["external-loyalty-home"] });
+                              queryClient.invalidateQueries({ queryKey: ["brands-with-provider"] });
+                              toast.success(`Connected to ${brand.loyalty_provider}`);
+                            }}
                             className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-all hover:opacity-90 active:scale-[0.96]"
                           >
                             <UserPlus className="h-3 w-3" />
                             Register
-                          </a>
+                          </button>
                         ) : (
                           <button
                             onClick={() => navigate(`/brands?brand=${brand.id}`)}
