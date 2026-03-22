@@ -266,7 +266,7 @@ export default function Brands() {
     enabled: !!user,
   });
 
-
+  const syncAttempted = useRef(false);
   useEffect(() => {
     if (!user || syncAttempted.current || loyaltyConnections.length === 0) return;
     syncAttempted.current = true;
