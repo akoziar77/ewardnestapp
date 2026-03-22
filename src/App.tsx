@@ -38,31 +38,42 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/home" element={<Index />} />
+      {/* Public routes */}
       <Route path="/auth" element={<Auth />} />
-      <Route path="/onboarding" element={<Onboarding />} />
-      <Route path="/scan" element={<Scan />} />
-      <Route path="/rewards" element={<Rewards />} />
-      <Route path="/history" element={<History />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/brands" element={<Brands />} />
-      <Route path="/brands/settings" element={<BrandSettings />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/pricing" element={<Pricing />} />
-      <Route path="/manage-tiers" element={<ManageTiers />} />
       <Route path="/merchant/login" element={<MerchantLogin />} />
-      <Route path="/merchant/onboarding" element={<MerchantOnboarding />} />
-      <Route path="/merchant" element={<MerchantLayout />}>
-        <Route index element={<MerchantOverview />} />
-        <Route path="rewards" element={<MerchantRewards />} />
-        <Route path="redemptions" element={<MerchantRedemptions />} />
-        <Route path="qr" element={<MerchantQR />} />
+
+      {/* Signed-in: any role (user, manager, admin) */}
+      <Route element={<ProtectedRoute signedIn={signedIn} roles={roles} required={["user", "manager", "admin"]} />}>
+        <Route path="/" element={<Index />} />
+        <Route path="/home" element={<Index />} />
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/scan" element={<Scan />} />
+        <Route path="/rewards" element={<Rewards />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/brands" element={<Brands />} />
+        <Route path="/brands/settings" element={<BrandSettings />} />
       </Route>
-      {/* Admin routes */}
+
+      {/* Manager or admin */}
+      <Route element={<ProtectedRoute signedIn={signedIn} roles={roles} required={["manager", "admin"]} />}>
+        <Route path="/manage-tiers" element={<ManageTiers />} />
+        <Route path="/merchant/onboarding" element={<MerchantOnboarding />} />
+        <Route path="/merchant" element={<MerchantLayout />}>
+          <Route index element={<MerchantOverview />} />
+          <Route path="rewards" element={<MerchantRewards />} />
+          <Route path="redemptions" element={<MerchantRedemptions />} />
+          <Route path="qr" element={<MerchantQR />} />
+        </Route>
+      </Route>
+
+      {/* Admin only */}
       <Route element={<ProtectedRoute signedIn={signedIn} roles={roles} required={["admin"]} />}>
         <Route path="/admin/roles" element={<AdminRoles />} />
       </Route>
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
