@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import LoyaltyConnectDialog from "@/components/LoyaltyConnectDialog";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, MapPin, Trophy, Sparkles, Clock, ChevronDown, Trash2, Heart, Link2 } from "lucide-react";
+import { ArrowLeft, Plus, MapPin, Trophy, Sparkles, Clock, ChevronDown, Trash2, Heart, Link2, Search } from "lucide-react";
 import { format } from "date-fns";
 
 interface Brand {
@@ -44,6 +44,7 @@ export default function Brands() {
   const [visitNotes, setVisitNotes] = useState("");
   const [filter, setFilter] = useState<string | null>(null);
   const [expandedBrandId, setExpandedBrandId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (!loading && !user) {
@@ -241,9 +242,9 @@ export default function Brands() {
 
   const categories = [...new Set(brands.map((b) => b.category).filter(Boolean))] as string[];
 
-  const filtered = filter
-    ? brands.filter((b) => b.category === filter)
-    : brands;
+  const filtered = brands
+    .filter((b) => !filter || b.category === filter)
+    .filter((b) => !searchQuery || b.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-20">
@@ -261,6 +262,20 @@ export default function Brands() {
           </p>
         </div>
       </header>
+
+      {/* Search bar */}
+      <div className="px-6 pb-2">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search brands..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 h-9 text-sm rounded-xl bg-muted border-0 focus-visible:ring-1"
+          />
+        </div>
+      </div>
 
       {/* Category filters */}
       <div className="flex gap-1.5 px-6 pb-3 overflow-x-auto no-scrollbar">
