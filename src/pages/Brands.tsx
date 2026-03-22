@@ -648,6 +648,36 @@ export default function Brands() {
                         </p>
                       )}
                     </div>
+                    {/* Register button on collapsed card */}
+                    {brand.loyalty_provider && !conn && (() => {
+                      const nameParts = (profile?.display_name ?? "").split(" ");
+                      const regUrl = buildRegistrationUrl(brand.loyalty_provider, {
+                        firstName: nameParts[0] || undefined,
+                        lastName: nameParts.slice(1).join(" ") || undefined,
+                        email: user?.email || undefined,
+                        phone: profile?.phone || undefined,
+                        zipCode: profile?.zip_code || undefined,
+                      });
+                      if (!regUrl) return null;
+                      return (
+                        <button
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            await autoConnectOnRegister({
+                              brandId: brand.id,
+                              providerName: brand.loyalty_provider!,
+                              registrationUrl: regUrl,
+                            });
+                            queryClient.invalidateQueries({ queryKey: ["external-loyalty"] });
+                            toast.success(`Connected to ${brand.loyalty_provider}`);
+                          }}
+                          className="mt-2 flex items-center gap-1 rounded-lg bg-primary px-2 py-1 text-[10px] font-semibold text-primary-foreground hover:bg-primary/90 active:scale-[0.97] transition-colors"
+                        >
+                          <UserPlus className="h-3 w-3" />
+                          Register
+                        </button>
+                      );
+                    })()}
                   </button>
 
                   {/* Expanded details */}
