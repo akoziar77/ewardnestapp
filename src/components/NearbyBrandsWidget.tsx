@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,9 +8,11 @@ import { getGeofenceRadiusMeters } from "@/pages/BrandSettings";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-interface BrandWithDistance {
+interface NearbyLocation {
   id: string;
+  brand_id: string;
   name: string;
+  brand_name: string;
   logo_emoji: string;
   category: string | null;
   latitude: number;
@@ -46,11 +48,11 @@ function createEmojiIcon(emoji: string) {
 }
 
 function MiniMap({
-  brands,
+  locations,
   userPos,
   onBrandClick,
 }: {
-  brands: BrandWithDistance[];
+  locations: NearbyLocation[];
   userPos: { lat: number; lng: number };
   onBrandClick: (id: string) => void;
 }) {
@@ -77,12 +79,10 @@ function MiniMap({
 
     const map = mapRef.current;
 
-    // Clear non-tile layers
     map.eachLayer((layer) => {
       if (!(layer instanceof L.TileLayer)) map.removeLayer(layer);
     });
 
-    // User location marker
     L.circleMarker([userPos.lat, userPos.lng], {
       radius: 6,
       color: "hsl(var(--primary))",
@@ -91,10 +91,9 @@ function MiniMap({
       weight: 2,
     }).addTo(map);
 
-    // Brand markers + geofence circles
-    for (const brand of brands) {
-      L.circle([brand.latitude, brand.longitude], {
-        radius: brand.geofence_radius_meters,
+    for (const loc of locations) {
+      L.circle([loc.latitude, loc.longitude], {
+        radius: loc.geofence_radius_meters,
         color: "hsl(168, 33%, 36%)",
         fillColor: "hsl(168, 33%, 36%)",
         fillOpacity: 0.08,
@@ -102,32 +101,31 @@ function MiniMap({
         dashArray: "4 3",
       }).addTo(map);
 
-      const marker = L.marker([brand.latitude, brand.longitude], {
-        icon: createEmojiIcon(brand.logo_emoji),
+      const marker = L.marker([loc.latitude, loc.longitude], {
+        icon: createEmojiIcon(loc.logo_emoji),
       }).addTo(map);
 
       marker.bindPopup(
         `<div style="text-align:center;min-width:80px;">
-          <p style="font-size:1rem;margin-bottom:1px;">${brand.logo_emoji}</p>
-          <p style="font-weight:600;font-size:0.75rem;margin:0;">${brand.name}</p>
-          <p style="font-size:10px;color:#888;margin:2px 0 0;">${formatDistance(brand.distance)}</p>
+          <p style="font-size:1rem;margin-bottom:1px;">${loc.logo_emoji}</p>
+          <p style="font-weight:600;font-size:0.75rem;margin:0;">${loc.name}</p>
+          <p style="font-size:10px;color:#888;margin:2px 0 0;">${formatDistance(loc.distance)}</p>
         </div>`
       );
 
-      marker.on("click", () => onBrandClick(brand.id));
+      marker.on("click", () => onBrandClick(loc.brand_id));
     }
 
-    // Fit bounds to include user + brands
-    const allPoints: [number, number][] = [
+    const allPts: [number, number][] = [
       [userPos.lat, userPos.lng],
-      ...brands.map((b) => [b.latitude, b.longitude] as [number, number]),
+      ...locations.map((l) => [l.latitude, l.longitude] as [number, number]),
     ];
-    if (allPoints.length > 1) {
-      map.fitBounds(L.latLngBounds(allPoints), { padding: [20, 20], maxZoom: 14 });
+    if (allPts.length > 1) {
+      map.fitBounds(L.latLngBounds(allPts), { padding: [20, 20], maxZoom: 14 });
     }
 
     return () => {};
-  }, [brands, userPos]);
+  }, [locations, userPos]);
 
   useEffect(() => {
     return () => {
@@ -166,33 +164,43 @@ export default function NearbyBrandsWidget() {
     );
   }, []);
 
-  const { data: brands = [] } = useQuery({
-    queryKey: ["brands-with-location"],
+  const { data: rawLocations = [] } = useQuery({
+    queryKey: ["nearby-brand-locations"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("brands")
-        .select("id, name, logo_emoji, category, latitude, longitude, geofence_radius_meters")
+        .from("brand_locations")
+        .select("id, brand_id, name, latitude, longitude, geofence_radius_meters, city, state, brands!brand_locations_brand_id_fkey(name, logo_emoji, category)")
         .not("latitude", "is", null)
         .not("longitude", "is", null);
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []).map((loc: any) => ({
+        id: loc.id,
+        brand_id: loc.brand_id,
+        name: loc.name,
+        brand_name: loc.brands?.name ?? loc.name,
+        logo_emoji: loc.brands?.logo_emoji ?? "🏪",
+        category: loc.brands?.category ?? null,
+        latitude: loc.latitude as number,
+        longitude: loc.longitude as number,
+        geofence_radius_meters: loc.geofence_radius_meters,
+      }));
     },
     enabled: !!user,
     staleTime: 5 * 60 * 1000,
   });
 
-  const nearby: BrandWithDistance[] = userPos
-    ? brands
-        .map((b: any) => ({
-          ...b,
-          distance: haversine(userPos.lat, userPos.lng, b.latitude, b.longitude),
+  const nearby: NearbyLocation[] = userPos
+    ? rawLocations
+        .map((loc: any) => ({
+          ...loc,
+          distance: haversine(userPos.lat, userPos.lng, loc.latitude, loc.longitude),
         }))
-        .sort((a, b) => a.distance - b.distance)
+        .sort((a: NearbyLocation, b: NearbyLocation) => a.distance - b.distance)
         .slice(0, 10)
     : [];
 
   const userRadiusM = getGeofenceRadiusMeters();
-  const isInRange = (b: BrandWithDistance) => b.distance <= Math.min(b.geofence_radius_meters, userRadiusM);
+  const isInRange = (loc: NearbyLocation) => loc.distance <= Math.min(loc.geofence_radius_meters, userRadiusM);
 
   if (locationDenied) {
     return (
@@ -244,7 +252,7 @@ export default function NearbyBrandsWidget() {
     );
   }
 
-  const displayBrands = showMap ? nearby : nearby.slice(0, 5);
+  const displayLocs = showMap ? nearby : nearby.slice(0, 5);
 
   return (
     <div className="px-6 py-3">
@@ -276,7 +284,7 @@ export default function NearbyBrandsWidget() {
         {showMap && userPos && (
           <div className="mb-3">
             <MiniMap
-              brands={displayBrands}
+              locations={displayLocs}
               userPos={userPos}
               onBrandClick={(id) => navigate(`/brands?brand=${id}`)}
             />
@@ -284,19 +292,19 @@ export default function NearbyBrandsWidget() {
         )}
 
         <div className="space-y-1">
-          {displayBrands.map((brand) => {
-            const inRange = isInRange(brand);
+          {displayLocs.map((loc) => {
+            const inRange = isInRange(loc);
             return (
               <button
-                key={brand.id}
-                onClick={() => navigate(`/brands?brand=${brand.id}`)}
+                key={loc.id}
+                onClick={() => navigate(`/brands?brand=${loc.brand_id}`)}
                 className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-muted/60 active:scale-[0.98]"
               >
-                <span className="text-xl shrink-0">{brand.logo_emoji}</span>
+                <span className="text-xl shrink-0">{loc.logo_emoji}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{brand.name}</p>
-                  {brand.category && (
-                    <p className="text-[11px] text-muted-foreground">{brand.category}</p>
+                  <p className="text-sm font-medium truncate">{loc.name}</p>
+                  {loc.category && (
+                    <p className="text-[11px] text-muted-foreground">{loc.category}</p>
                   )}
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
@@ -307,7 +315,7 @@ export default function NearbyBrandsWidget() {
                     </span>
                   )}
                   <span className={`text-xs tabular-nums ${inRange ? "font-semibold text-primary" : "text-muted-foreground"}`}>
-                    {formatDistance(brand.distance)}
+                    {formatDistance(loc.distance)}
                   </span>
                 </div>
               </button>

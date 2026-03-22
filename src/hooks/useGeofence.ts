@@ -5,10 +5,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { getGeofenceRadiusMeters } from "@/pages/BrandSettings";
 
-interface BrandLocation {
+interface BrandLocationPoint {
   id: string;
-  name: string;
-  logo_emoji: string;
+  brand_id: string;
+  brand_name: string;
+  brand_emoji: string;
   latitude: number;
   longitude: number;
   geofence_radius_meters: number;
@@ -30,28 +31,27 @@ function haversineDistance(
 
 const COOLDOWN_MS = 30 * 60 * 1000;
 
-function getNotifiedKey(brandId: string): string {
-  return `geofence_notified_${brandId}`;
+function getNotifiedKey(locationId: string): string {
+  return `geofence_notified_${locationId}`;
 }
 
-function wasRecentlyNotified(brandId: string): boolean {
-  const raw = localStorage.getItem(getNotifiedKey(brandId));
+function wasRecentlyNotified(locationId: string): boolean {
+  const raw = localStorage.getItem(getNotifiedKey(locationId));
   if (!raw) return false;
   return Date.now() - parseInt(raw, 10) < COOLDOWN_MS;
 }
 
-function markNotified(brandId: string) {
-  localStorage.setItem(getNotifiedKey(brandId), Date.now().toString());
+function markNotified(locationId: string) {
+  localStorage.setItem(getNotifiedKey(locationId), Date.now().toString());
 }
 
-async function sendNotification(brand: BrandLocation) {
+async function sendNotification(point: BrandLocationPoint) {
   if (!("Notification" in window)) return;
   if (Notification.permission !== "granted") return;
 
-  const title = `${brand.logo_emoji} ${brand.name} nearby!`;
-  const body = `You're near ${brand.name}. Open the app to earn rewards!`;
+  const title = `${point.brand_emoji} ${point.brand_name} nearby!`;
+  const body = `You're near ${point.brand_name}. Open the app to earn rewards!`;
 
-  // Try service worker notification first (works in background)
   try {
     if ("serviceWorker" in navigator) {
       const registration = await navigator.serviceWorker.ready;
@@ -59,19 +59,19 @@ async function sendNotification(brand: BrandLocation) {
         body,
         icon: "/pwa-192.png",
         badge: "/pwa-192.png",
-        tag: `geofence-${brand.id}`,
-        data: { url: `/brands?brand=${brand.id}` },
+        tag: `geofence-${point.id}`,
+        data: { url: `/brands?brand=${point.brand_id}` },
       } as any);
       return;
     }
   } catch {
-    // Fall through to regular Notification API
+    // Fall through
   }
 
   new Notification(title, {
     body,
     icon: "/pwa-192.png",
-    tag: `geofence-${brand.id}`,
+    tag: `geofence-${point.id}`,
   });
 }
 
@@ -80,16 +80,24 @@ export function useGeofence() {
   const watchIdRef = useRef<number | null>(null);
   const insideFencesRef = useRef<Set<string>>(new Set());
 
-  const { data: brandLocations } = useQuery({
-    queryKey: ["brand-locations"],
+  const { data: locationPoints } = useQuery({
+    queryKey: ["geofence-locations"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("brands")
-        .select("id, name, logo_emoji, latitude, longitude, geofence_radius_meters")
+        .from("brand_locations")
+        .select("id, brand_id, name, latitude, longitude, geofence_radius_meters, brands!brand_locations_brand_id_fkey(name, logo_emoji)")
         .not("latitude", "is", null)
         .not("longitude", "is", null);
       if (error) throw error;
-      return (data ?? []) as BrandLocation[];
+      return (data ?? []).map((loc: any) => ({
+        id: loc.id,
+        brand_id: loc.brand_id,
+        brand_name: loc.brands?.name ?? loc.name,
+        brand_emoji: loc.brands?.logo_emoji ?? "🏪",
+        latitude: loc.latitude as number,
+        longitude: loc.longitude as number,
+        geofence_radius_meters: loc.geofence_radius_meters,
+      })) as BrandLocationPoint[];
     },
     enabled: !!user,
     staleTime: 5 * 60 * 1000,
@@ -97,42 +105,42 @@ export function useGeofence() {
 
   const checkProximity = useCallback(
     (position: GeolocationPosition) => {
-      if (!brandLocations?.length) return;
+      if (!locationPoints?.length) return;
 
       const { latitude, longitude } = position.coords;
 
-      for (const brand of brandLocations) {
+      for (const point of locationPoints) {
         const distance = haversineDistance(
           latitude, longitude,
-          brand.latitude, brand.longitude
+          point.latitude, point.longitude
         );
 
         const userRadius = getGeofenceRadiusMeters();
-        const effectiveRadius = Math.min(brand.geofence_radius_meters, userRadius);
+        const effectiveRadius = Math.min(point.geofence_radius_meters, userRadius);
         const isInside = distance <= effectiveRadius;
-        const wasInside = insideFencesRef.current.has(brand.id);
+        const wasInside = insideFencesRef.current.has(point.id);
 
         if (isInside && !wasInside) {
-          insideFencesRef.current.add(brand.id);
+          insideFencesRef.current.add(point.id);
 
-          if (!wasRecentlyNotified(brand.id)) {
-            markNotified(brand.id);
-            sendNotification(brand);
-            toast(`${brand.logo_emoji} You're near ${brand.name}!`, {
+          if (!wasRecentlyNotified(point.id)) {
+            markNotified(point.id);
+            sendNotification(point);
+            toast(`${point.brand_emoji} You're near ${point.brand_name}!`, {
               description: "Open the app to earn rewards.",
               duration: 6000,
             });
           }
         } else if (!isInside && wasInside) {
-          insideFencesRef.current.delete(brand.id);
+          insideFencesRef.current.delete(point.id);
         }
       }
     },
-    [brandLocations]
+    [locationPoints]
   );
 
   useEffect(() => {
-    if (!user || !brandLocations?.length) return;
+    if (!user || !locationPoints?.length) return;
     if (!("geolocation" in navigator)) return;
 
     watchIdRef.current = navigator.geolocation.watchPosition(
@@ -155,7 +163,7 @@ export function useGeofence() {
         watchIdRef.current = null;
       }
     };
-  }, [user, brandLocations, checkProximity]);
+  }, [user, locationPoints, checkProximity]);
 }
 
 export async function requestNotificationPermission(): Promise<boolean> {

@@ -131,9 +131,9 @@ export default function Brands() {
     queryFn: async () => {
       const { data } = await supabase
         .from("brands")
-        .select("*")
+        .select("*, brand_locations(id, name, latitude, longitude, geofence_radius_meters, city, state)")
         .order("name");
-      return (data ?? []) as BrandData[];
+      return (data ?? []) as (BrandData & { brand_locations?: any[] })[];
     },
     enabled: !!user,
   });
@@ -458,16 +458,17 @@ export default function Brands() {
           <MapErrorBoundary>
             <Suspense fallback={<div className="flex items-center justify-center h-[420px] rounded-2xl bg-muted"><p className="text-sm text-muted-foreground">Loading map…</p></div>}>
               <BrandMapView
-                brands={filtered.map((b) => ({
+                brands={filtered.map((b: any) => ({
                   id: b.id,
                   name: b.name,
                   logo_emoji: b.logo_emoji,
-                  latitude: (b as any).latitude,
-                  longitude: (b as any).longitude,
-                  geofence_radius_meters: (b as any).geofence_radius_meters ?? 200,
+                  latitude: b.latitude,
+                  longitude: b.longitude,
+                  geofence_radius_meters: b.geofence_radius_meters ?? 200,
                   category: b.category,
                   milestone_visits: b.milestone_visits,
                   milestone_points: b.milestone_points,
+                  locations: b.brand_locations ?? [],
                 }))}
                 onBrandClick={(id) => {
                   setViewMode("list");
