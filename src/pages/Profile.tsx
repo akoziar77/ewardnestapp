@@ -76,7 +76,6 @@ export default function Profile() {
         } as any)
         .eq("user_id", user!.id);
       if (error) throw error;
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile", user?.id] });
