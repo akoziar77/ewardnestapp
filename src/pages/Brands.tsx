@@ -66,7 +66,6 @@ export default function Brands() {
     searchParams.get("brand")
   );
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [widgetFields, setWidgetFieldsState] = useState<string[]>(getVisibleWidgetFields);
   const [showWidgetSettings, setShowWidgetSettings] = useState(false);
 
