@@ -312,6 +312,11 @@ export default function Brands() {
                           {count}/{brand.milestone_visits}
                         </span>
                       </div>
+                      {expiring > 0 && (
+                        <p className="mt-1 text-[10px] text-destructive font-medium">
+                          ⚠ {expiring} visit{expiring > 1 ? "s" : ""} expiring next month
+                        </p>
+                      )}
                     </div>
                   </button>
 
