@@ -4,6 +4,7 @@ import { Html5Qrcode } from "html5-qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, Check, X, Camera } from "lucide-react";
+import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 
 type ScanState =
