@@ -33,6 +33,33 @@ import {
 
 const BrandMapView = lazy(() => import("@/components/BrandMapView"));
 
+class MapErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: string }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: "" };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error: error.message };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center justify-center h-[420px] rounded-2xl bg-muted">
+          <div className="text-center px-6">
+            <p className="text-2xl mb-2">🗺️</p>
+            <p className="text-sm font-medium text-foreground">Map unavailable</p>
+            <p className="text-xs text-muted-foreground mt-1">{this.state.error}</p>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function Brands() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
