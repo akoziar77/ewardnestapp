@@ -22,6 +22,7 @@ import {
   Camera,
   ChevronRight,
   Save,
+  MapPin,
 } from "lucide-react";
 
 export default function Profile() {
