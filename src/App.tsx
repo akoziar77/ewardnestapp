@@ -88,6 +88,7 @@ function AppRoutes() {
         <Route path="/admin/quick-actions" element={<PageGate pageKey="admin_quick_actions"><AdminQuickActions /></PageGate>} />
         <Route path="/admin/onboarding" element={<PageGate pageKey="admin_onboarding"><AdminOnboarding /></PageGate>} />
         <Route path="/admin/pages" element={<PageGate pageKey="admin_page_directory"><AdminPageDirectory /></PageGate>} />
+        <Route path="/admin/boosters" element={<PageGate pageKey="admin_boosters"><AdminBoosters /></PageGate>} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
