@@ -40,15 +40,15 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { action, brand_id, provider_name, api_endpoint, access_token, external_member_id } = body;
+    const { action, brand_id, provider_name, api_endpoint, access_token, external_member_id, points_balance } = body;
 
     const adminClient = createClient(supabaseUrl, serviceKey);
 
     if (action === "connect") {
-      // Validate the external loyalty API by making a test call if endpoint provided
-      let pointsBalance: number | null = null;
+      // Use manually provided points_balance, or try API if endpoint provided
+      let pointsBalance: number | null = typeof points_balance === "number" ? points_balance : null;
 
-      if (api_endpoint && access_token) {
+      if (pointsBalance === null && api_endpoint && access_token) {
         try {
           const testResponse = await fetch(api_endpoint, {
             headers: {
@@ -57,42 +57,20 @@ Deno.serve(async (req) => {
             },
           });
 
-          if (!testResponse.ok) {
-            return new Response(
-              JSON.stringify({
-                error: "loyalty_api_error",
-                message: `External loyalty API returned ${testResponse.status}. Check your credentials.`,
-              }),
-              {
-                status: 400,
-                headers: { ...corsHeaders, "Content-Type": "application/json" },
-              }
-            );
+          if (testResponse.ok) {
+            const apiData = await testResponse.json();
+            pointsBalance =
+              apiData.points ??
+              apiData.balance ??
+              apiData.data?.points ??
+              apiData.data?.balance ??
+              null;
           }
-
-          const apiData = await testResponse.json();
-          // Try to extract points from common response shapes
-          pointsBalance =
-            apiData.points ??
-            apiData.balance ??
-            apiData.data?.points ??
-            apiData.data?.balance ??
-            null;
-        } catch (fetchErr) {
-          return new Response(
-            JSON.stringify({
-              error: "loyalty_api_unreachable",
-              message: "Could not reach the external loyalty API endpoint.",
-            }),
-            {
-              status: 400,
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-            }
-          );
+        } catch {
+          // API unreachable — continue with manual balance
         }
       }
 
-      // Upsert the connection
       const { data, error } = await adminClient
         .from("external_loyalty_connections")
         .upsert(
@@ -158,58 +136,134 @@ Deno.serve(async (req) => {
         );
       }
 
-      if (!conn.api_endpoint) {
-        return new Response(
-          JSON.stringify({ error: "No API endpoint configured for this connection" }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
-      }
-
-      const fetchHeaders: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      if (conn.access_token) {
-        fetchHeaders["Authorization"] = `Bearer ${conn.access_token}`;
-      }
-
-      const resp = await fetch(conn.api_endpoint, {
-        headers: fetchHeaders,
-      });
-
-      if (!resp.ok) {
+      // If manual points_balance provided, update directly
+      if (typeof points_balance === "number") {
         await adminClient
           .from("external_loyalty_connections")
-          .update({ status: "error", updated_at: new Date().toISOString() })
+          .update({
+            external_points_balance: points_balance,
+            status: "connected",
+            last_synced_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
           .eq("id", conn.id);
 
         return new Response(
-          JSON.stringify({ error: "Failed to sync with loyalty API" }),
+          JSON.stringify({ success: true, points_balance }),
           {
-            status: 502,
+            status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           }
         );
       }
 
-      const apiData = await resp.json();
-      const points =
-        apiData.points ?? apiData.balance ?? apiData.data?.points ?? apiData.data?.balance ?? null;
+      // Try API sync if endpoint configured
+      if (conn.api_endpoint) {
+        try {
+          const fetchHeaders: Record<string, string> = {
+            "Content-Type": "application/json",
+          };
+          if (conn.access_token) {
+            fetchHeaders["Authorization"] = `Bearer ${conn.access_token}`;
+          }
 
-      await adminClient
+          const resp = await fetch(conn.api_endpoint, { headers: fetchHeaders });
+
+          if (resp.ok) {
+            const apiData = await resp.json();
+            const points =
+              apiData.points ?? apiData.balance ?? apiData.data?.points ?? apiData.data?.balance ?? null;
+
+            await adminClient
+              .from("external_loyalty_connections")
+              .update({
+                external_points_balance: points,
+                status: "connected",
+                last_synced_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", conn.id);
+
+            return new Response(
+              JSON.stringify({ success: true, points_balance: points }),
+              {
+                status: 200,
+                headers: { ...corsHeaders, "Content-Type": "application/json" },
+              }
+            );
+          }
+        } catch {
+          // API unreachable — return current balance without error
+        }
+      }
+
+      // No API or API failed — return current balance gracefully
+      return new Response(
+        JSON.stringify({
+          success: true,
+          points_balance: conn.external_points_balance,
+          synced: false,
+          message: "No API available. Update points manually.",
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    if (action === "sync_all") {
+      // Sync all connections for this user — attempt API calls, fallback gracefully
+      const { data: connections, error: listErr } = await adminClient
         .from("external_loyalty_connections")
-        .update({
-          external_points_balance: points,
-          status: "connected",
-          last_synced_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", conn.id);
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("status", "connected");
+
+      if (listErr) throw listErr;
+
+      const results = [];
+      for (const conn of (connections || [])) {
+        let points = conn.external_points_balance;
+        let synced = false;
+
+        if (conn.api_endpoint) {
+          try {
+            const fetchHeaders: Record<string, string> = { "Content-Type": "application/json" };
+            if (conn.access_token) fetchHeaders["Authorization"] = `Bearer ${conn.access_token}`;
+
+            const resp = await fetch(conn.api_endpoint, { headers: fetchHeaders });
+            if (resp.ok) {
+              const apiData = await resp.json();
+              const newPoints = apiData.points ?? apiData.balance ?? apiData.data?.points ?? apiData.data?.balance ?? null;
+              if (newPoints !== null) {
+                points = newPoints;
+                synced = true;
+                await adminClient
+                  .from("external_loyalty_connections")
+                  .update({
+                    external_points_balance: points,
+                    last_synced_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                  })
+                  .eq("id", conn.id);
+              }
+            }
+          } catch {
+            // Skip — keep existing balance
+          }
+        }
+
+        results.push({
+          brand_id: conn.brand_id,
+          provider_name: conn.provider_name,
+          points_balance: points,
+          synced,
+        });
+      }
 
       return new Response(
-        JSON.stringify({ success: true, points_balance: points }),
+        JSON.stringify({ success: true, connections: results }),
         {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -218,7 +272,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ error: "Invalid action. Use: connect, disconnect, sync" }),
+      JSON.stringify({ error: "Invalid action. Use: connect, disconnect, sync, sync_all" }),
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

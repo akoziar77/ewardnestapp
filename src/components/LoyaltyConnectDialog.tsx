@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Link2, Unlink, RefreshCw, Key, Globe, User } from "lucide-react";
+import { Link2, Unlink, RefreshCw, Key, Globe, User, Coins } from "lucide-react";
 
 const LOYALTY_PRESETS = [
   { name: "Starbucks Rewards", endpoint: "https://api.starbucks.com/loyalty/v1/balance" },
@@ -69,6 +69,7 @@ export default function LoyaltyConnectDialog({
   const [accessToken, setAccessToken] = useState("");
   const [memberId, setMemberId] = useState("");
   const [password, setPassword] = useState("");
+  const [pointsBalance, setPointsBalance] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleConnect = async () => {
@@ -79,6 +80,7 @@ export default function LoyaltyConnectDialog({
 
     setLoading(true);
     try {
+      const parsedPoints = pointsBalance.trim() ? parseInt(pointsBalance, 10) : null;
       const { data, error } = await supabase.functions.invoke("connect-loyalty", {
         body: {
           action: "connect",
@@ -87,6 +89,7 @@ export default function LoyaltyConnectDialog({
           api_endpoint: apiEndpoint.trim() || null,
           access_token: accessToken.trim() || null,
           external_member_id: memberId.trim() || null,
+          points_balance: !isNaN(parsedPoints as number) ? parsedPoints : null,
         },
       });
 
@@ -165,6 +168,7 @@ export default function LoyaltyConnectDialog({
     setAccessToken("");
     setMemberId("");
     setPassword("");
+    setPointsBalance("");
   };
 
   return (
@@ -330,6 +334,22 @@ export default function LoyaltyConnectDialog({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Your loyalty account password"
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Current points balance
+              </Label>
+              <div className="relative">
+                <Coins className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="number"
+                  value={pointsBalance}
+                  onChange={(e) => setPointsBalance(e.target.value)}
+                  placeholder="e.g. 12500"
                   className="pl-10"
                 />
               </div>

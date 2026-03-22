@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -156,6 +156,21 @@ export default function Brands() {
     },
     enabled: !!user,
   });
+
+  // Auto-sync all external loyalty connections on page load
+  const syncAttempted = useRef(false);
+  useEffect(() => {
+    if (!user || syncAttempted.current || loyaltyConnections.length === 0) return;
+    syncAttempted.current = true;
+    supabase.functions
+      .invoke("connect-loyalty", { body: { action: "sync_all" } })
+      .then(({ data }) => {
+        if (data?.success) {
+          queryClient.invalidateQueries({ queryKey: ["loyalty-connections", user.id] });
+        }
+      })
+      .catch(() => {});
+  }, [user, loyaltyConnections.length, queryClient]);
 
   const [loyaltyBrandId, setLoyaltyBrandId] = useState<string | null>(null);
 
