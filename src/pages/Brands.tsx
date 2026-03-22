@@ -30,6 +30,7 @@ import {
   type BrandData,
   type BrandVisitData,
 } from "@/lib/widgetFields";
+import BrandMapView from "@/components/BrandMapView";
 
 export default function Brands() {
   const { user, loading } = useAuth();
