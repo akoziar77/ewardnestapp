@@ -87,9 +87,8 @@ export function usePushNotifications() {
         await registration.showNotification(title, {
           icon: "/pwa-192.png",
           badge: "/pwa-192.png",
-          vibrate: [100, 50, 100],
           ...options,
-        });
+        } as any);
       } catch {
         // Fallback to regular Notification API
         new Notification(title, options);
