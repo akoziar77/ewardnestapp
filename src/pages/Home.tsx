@@ -834,8 +834,14 @@ export default function Home() {
                       if (!regUrl) return null;
                       return (
                         <button
-                          onClick={() => {
-                            window.open(regUrl, "_blank", "noopener");
+                          onClick={async () => {
+                            await autoConnectOnRegister({
+                              brandId: favChoiceBrand.id,
+                              providerName: favChoiceBrand.loyalty_provider!,
+                              registrationUrl: regUrl,
+                            });
+                            queryClient.invalidateQueries({ queryKey: ["external-loyalty-home"] });
+                            toast.success(`Connected to ${favChoiceBrand.loyalty_provider}`);
                             setFavChoiceBrand(null);
                           }}
                           className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left transition-all hover:shadow-sm active:scale-[0.97]"
@@ -845,7 +851,7 @@ export default function Home() {
                           </div>
                           <div>
                             <p className="text-sm font-semibold">Register for {favChoiceBrand.loyalty_provider}</p>
-                            <p className="text-[11px] text-muted-foreground">Sign up with pre-filled info</p>
+                            <p className="text-[11px] text-muted-foreground">Sign up & auto-connect</p>
                           </div>
                         </button>
                       );
