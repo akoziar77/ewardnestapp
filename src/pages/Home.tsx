@@ -495,6 +495,9 @@ export default function Home() {
                   <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                     <UserPlus className="h-3.5 w-3.5 text-primary" />
                     Join Programs
+                    <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/10 px-1.5 text-[11px] font-bold tabular-nums text-primary">
+                      {unconnectedBrands.length}
+                    </span>
                   </h2>
                   <button
                     onClick={() => navigate("/brands")}
