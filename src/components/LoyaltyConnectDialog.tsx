@@ -80,6 +80,7 @@ export default function LoyaltyConnectDialog({
 
     setLoading(true);
     try {
+      const parsedPoints = pointsBalance.trim() ? parseInt(pointsBalance, 10) : null;
       const { data, error } = await supabase.functions.invoke("connect-loyalty", {
         body: {
           action: "connect",
@@ -88,6 +89,7 @@ export default function LoyaltyConnectDialog({
           api_endpoint: apiEndpoint.trim() || null,
           access_token: accessToken.trim() || null,
           external_member_id: memberId.trim() || null,
+          points_balance: !isNaN(parsedPoints as number) ? parsedPoints : null,
         },
       });
 
