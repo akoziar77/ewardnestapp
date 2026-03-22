@@ -231,6 +231,16 @@ export default function Profile() {
                 </div>
                 <Switch defaultChecked />
               </div>
+              <div className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <Moon className="h-5 w-5 text-muted-foreground" />
+                  <p className="text-sm font-medium">Dark mode</p>
+                </div>
+                <Switch
+                  checked={theme === "dark"}
+                  onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+                />
+              </div>
             </div>
           </div>
 
