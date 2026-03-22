@@ -236,7 +236,7 @@ export default function Home() {
               {loyaltyConnections.map((conn: any) => (
                 <button
                   key={conn.brand_id}
-                  onClick={() => navigate("/brands")}
+                  onClick={() => setLoyaltyChoiceConn(conn)}
                   className="flex w-full items-center gap-3 rounded-xl bg-muted/50 px-3.5 py-3 text-left transition-all hover:bg-muted active:scale-[0.98]"
                 >
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
