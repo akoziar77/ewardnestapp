@@ -263,15 +263,17 @@ export default function LoyaltyConnectDialog({
                 Loyalty program *
               </Label>
               <Select
-                value={providerName}
+                value={isCustomProvider ? "__custom__" : providerName}
                 onValueChange={(val) => {
-                  setProviderName(val);
-                  if (val !== "__custom__") {
-                    const preset = LOYALTY_PRESETS.find((p) => p.name === val);
-                    if (preset) setApiEndpoint(preset.endpoint);
-                  } else {
+                  if (val === "__custom__") {
+                    setIsCustomProvider(true);
                     setProviderName("");
                     setApiEndpoint("");
+                  } else {
+                    setIsCustomProvider(false);
+                    setProviderName(val);
+                    const preset = LOYALTY_PRESETS.find((p) => p.name === val);
+                    if (preset) setApiEndpoint(preset.endpoint);
                   }
                 }}
               >
@@ -287,7 +289,7 @@ export default function LoyaltyConnectDialog({
                   <SelectItem value="__custom__">Other (custom)</SelectItem>
                 </SelectContent>
               </Select>
-              {providerName === "" && (
+              {isCustomProvider && (
                 <div className="relative">
                   <Link2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
