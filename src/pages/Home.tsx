@@ -217,240 +217,214 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Points card */}
-      <div className="px-6 py-4">
-        <div className="relative overflow-hidden rounded-3xl bg-primary p-6 text-primary-foreground shadow-xl shadow-primary/15">
-          <div className="relative z-10">
-            <p className="text-sm font-medium opacity-80">In-app points</p>
-            <p className="mt-1 text-4xl font-bold tabular-nums tracking-tight">
-              {totalPoints.toLocaleString()}
-            </p>
-            <div className="mt-3 flex items-center gap-2 text-sm opacity-80">
-              <TrendingUp className="h-4 w-4" />
-              <span>
-                {hasActivity
-                  ? `${recentEntries!.length} recent transaction${recentEntries!.length > 1 ? "s" : ""}`
-                  : "No activity yet — start scanning!"}
-              </span>
-            </div>
-          </div>
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10" />
-          <div className="absolute -bottom-4 -right-4 h-20 w-20 rounded-full bg-white/5" />
-        </div>
-      </div>
-
-      {/* External loyalty card */}
-      {loyaltyConnections.length > 0 && (
-        <div className="px-6 pb-2">
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-primary" />
-                Loyalty points
-              </h2>
-              <p className="text-2xl font-bold tabular-nums text-foreground">
-                {totalExternalPoints.toLocaleString()}
-                <span className="text-xs font-medium text-muted-foreground ml-1">pts</span>
-              </p>
-            </div>
-            <div className="space-y-2.5">
-              {loyaltyConnections.map((conn: any) => (
-                <button
-                  key={conn.brand_id}
-                  onClick={() => setLoyaltyChoiceConn(conn)}
-                  className="flex w-full items-center gap-3 rounded-xl bg-muted/50 px-3.5 py-3 text-left transition-all hover:bg-muted active:scale-[0.98]"
-                >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-                    <Link2 className="h-4 w-4 text-primary" />
+      {/* Render widgets in layout order */}
+      {widgetLayout.filter((w) => w.visible).map((widget) => {
+        switch (widget.id) {
+          case "points":
+            return (
+              <div key="points" className="px-6 py-4">
+                <div className="relative overflow-hidden rounded-3xl bg-primary p-6 text-primary-foreground shadow-xl shadow-primary/15">
+                  <div className="relative z-10">
+                    <p className="text-sm font-medium opacity-80">In-app points</p>
+                    <p className="mt-1 text-4xl font-bold tabular-nums tracking-tight">
+                      {totalPoints.toLocaleString()}
+                    </p>
+                    <div className="mt-3 flex items-center gap-2 text-sm opacity-80">
+                      <TrendingUp className="h-4 w-4" />
+                      <span>
+                        {hasActivity
+                          ? `${recentEntries!.length} recent transaction${recentEntries!.length > 1 ? "s" : ""}`
+                          : "No activity yet — start scanning!"}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{conn.provider_name}</p>
-                    <p className="text-[11px] text-muted-foreground">Connected program</p>
-                  </div>
-                  <p className="text-base font-bold tabular-nums text-foreground">
-                    {(conn.external_points_balance ?? 0).toLocaleString()}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Quick actions */}
-      <div className="px-6 py-4">
-        <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Quick actions
-        </h2>
-        <div className="grid grid-cols-4 gap-3">
-          {[
-            { icon: QrCode, label: "Scan", color: "bg-primary/10 text-primary", onClick: () => navigate("/scan") },
-            { icon: Gift, label: "Rewards", color: "bg-secondary/10 text-secondary", onClick: () => navigate("/rewards") },
-            { icon: Store, label: "Brands", color: "bg-primary/10 text-primary", onClick: () => navigate("/brands") },
-            { icon: History, label: "History", color: "bg-muted text-muted-foreground", onClick: () => navigate("/history") },
-          ].map(({ icon: Icon, label, color, onClick }) => (
-            <button
-              key={label}
-              onClick={onClick}
-              className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-sm active:scale-[0.96]"
-            >
-              <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${color}`}>
-                <Icon className="h-6 w-6" />
-              </div>
-              <span className="text-sm font-medium">{label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Favorite brands */}
-      {favoriteBrands.length > 0 && (
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <Heart className="h-3.5 w-3.5 fill-destructive text-destructive" />
-              Favorite brands
-            </h2>
-            <button
-              onClick={() => navigate("/brands")}
-              className="text-xs font-medium text-primary active:scale-95"
-            >
-              View all
-            </button>
-          </div>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
-            {favoriteBrands.map((brand: any) => {
-              const count = visitCountForBrand(brand.id);
-              const progress = Math.min(
-                (count / brand.milestone_visits) * 100,
-                100
-              );
-              const expPts = expiringPointsForBrand(brand.id);
-              const extConn = loyaltyConnections.find((c: any) => c.brand_id === brand.id);
-              const extPts = extConn?.external_points_balance ?? 0;
-              const visibleFields = getVisibleWidgetFields();
-              return (
-                <button
-                  key={brand.id}
-                  onClick={() => setFavChoiceBrand(brand)}
-                  className="relative flex shrink-0 min-w-[8rem] max-w-[10rem] w-auto flex-col items-center gap-1.5 rounded-2xl border border-border bg-card px-3 py-4 transition-all hover:shadow-sm active:scale-[0.96]"
-                >
-                  {(brand.loyalty_api_url || brand.website_url) && (
-                    <ExternalLink className="absolute top-2.5 right-2.5 h-3 w-3 text-muted-foreground" />
-                  )}
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-2xl">
-                    {brand.logo_emoji}
-                  </div>
-                  <p className="text-xs font-semibold w-full text-center break-words line-clamp-2">
-                    {brand.name}
-                  </p>
-                  {visibleFields.includes("category") && brand.category && (
-                    <p className="text-[10px] text-muted-foreground">{brand.category}</p>
-                  )}
-                  {visibleFields.includes("progress") && (
-                    <>
-                      <Progress value={progress} className="h-1 w-full" />
-                      <p className="text-[10px] tabular-nums text-muted-foreground">
-                        {count}/{brand.milestone_visits}
-                      </p>
-                    </>
-                  )}
-                  {visibleFields.includes("milestonePoints") && (
-                    <p className="text-[10px] font-semibold text-primary">
-                      {brand.milestone_points} pts
-                    </p>
-                  )}
-                  {visibleFields.includes("loyaltyProvider") && brand.loyalty_provider && (
-                    <p className="text-[10px] text-muted-foreground truncate w-full text-center">
-                      {brand.loyalty_provider}
-                    </p>
-                  )}
-                  {visibleFields.includes("visitExpiry") && (
-                    <p className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                      <CalendarClock className="h-2.5 w-2.5" />
-                      {brand.visit_expiry_months}mo expiry
-                    </p>
-                  )}
-                  {visibleFields.includes("websiteLink") && brand.website_url && (
-                    <p className="text-[10px] text-primary flex items-center gap-0.5">
-                      <Globe className="h-2.5 w-2.5" />
-                      Website
-                    </p>
-                  )}
-                  {visibleFields.includes("externalPoints") && extPts > 0 && (
-                    <p className="text-[10px] font-medium text-foreground/70 flex items-center gap-0.5">
-                      <Link2 className="h-2.5 w-2.5" />
-                      {extPts.toLocaleString()}
-                    </p>
-                  )}
-                  {visibleFields.includes("expiringPoints") && expPts > 0 && (
-                    <p className="text-[9px] font-medium text-destructive leading-tight text-center">
-                      ⚠ {expPts} pts expiring soon
-                    </p>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Recent activity or empty state */}
-      {hasActivity ? (
-        <div className="px-6 py-4">
-          <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            Recent activity
-          </h2>
-          <div className="space-y-2">
-            {recentEntries!.map((entry) => (
-              <div
-                key={entry.id}
-                className="flex items-center justify-between rounded-xl border border-border bg-card p-4"
-              >
-                <div>
-                  <p className="text-sm font-medium">
-                    {(entry as any).merchants?.name ?? "Unknown"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(entry.created_at).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+                  <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10" />
+                  <div className="absolute -bottom-4 -right-4 h-20 w-20 rounded-full bg-white/5" />
                 </div>
-                <span
-                  className={`text-sm font-bold tabular-nums ${
-                    entry.delta_points > 0 ? "text-[hsl(var(--success))]" : "text-destructive"
-                  }`}
-                >
-                  {entry.delta_points > 0 ? "+" : ""}
-                  {entry.delta_points}
-                </span>
               </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-1 flex-col items-center justify-center px-6 py-8 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted mb-4">
-            <Gift className="h-8 w-8 text-muted-foreground" />
-          </div>
-          <h3 className="font-semibold">No rewards yet</h3>
-          <p className="mt-1 max-w-xs text-sm text-muted-foreground">
-            Visit a partner merchant and scan their QR code to start earning points.
-          </p>
-          <Button
-            variant="outline"
-            className="mt-4 active:scale-[0.97]"
-            onClick={() => navigate("/scan")}
-          >
-            Scan a QR code
-          </Button>
-        </div>
-      )}
-      {/* Loyalty brand choice dialog */}
+            );
+
+          case "loyalty":
+            if (loyaltyConnections.length === 0) return null;
+            return (
+              <div key="loyalty" className="px-6 pb-2">
+                <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5 text-primary" />
+                      Loyalty points
+                    </h2>
+                    <p className="text-2xl font-bold tabular-nums text-foreground">
+                      {totalExternalPoints.toLocaleString()}
+                      <span className="text-xs font-medium text-muted-foreground ml-1">pts</span>
+                    </p>
+                  </div>
+                  <div className="space-y-2.5">
+                    {loyaltyConnections.map((conn: any) => (
+                      <button
+                        key={conn.brand_id}
+                        onClick={() => setLoyaltyChoiceConn(conn)}
+                        className="flex w-full items-center gap-3 rounded-xl bg-muted/50 px-3.5 py-3 text-left transition-all hover:bg-muted active:scale-[0.98]"
+                      >
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+                          <Link2 className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold truncate">{conn.provider_name}</p>
+                          <p className="text-[11px] text-muted-foreground">Connected program</p>
+                        </div>
+                        <p className="text-base font-bold tabular-nums text-foreground">
+                          {(conn.external_points_balance ?? 0).toLocaleString()}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+
+          case "quickActions":
+            return (
+              <div key="quickActions" className="px-6 py-4">
+                <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  Quick actions
+                </h2>
+                <div className="grid grid-cols-4 gap-3">
+                  {[
+                    { icon: QrCode, label: "Scan", color: "bg-primary/10 text-primary", onClick: () => navigate("/scan") },
+                    { icon: Gift, label: "Rewards", color: "bg-secondary/10 text-secondary", onClick: () => navigate("/rewards") },
+                    { icon: Store, label: "Brands", color: "bg-primary/10 text-primary", onClick: () => navigate("/brands") },
+                    { icon: History, label: "History", color: "bg-muted text-muted-foreground", onClick: () => navigate("/history") },
+                  ].map(({ icon: Icon, label, color, onClick }) => (
+                    <button
+                      key={label}
+                      onClick={onClick}
+                      className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-sm active:scale-[0.96]"
+                    >
+                      <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${color}`}>
+                        <Icon className="h-6 w-6" />
+                      </div>
+                      <span className="text-sm font-medium">{label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+
+          case "favorites":
+            if (favoriteBrands.length === 0) return null;
+            return (
+              <div key="favorites" className="px-6 py-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                    <Heart className="h-3.5 w-3.5 fill-destructive text-destructive" />
+                    Favorite brands
+                  </h2>
+                  <button
+                    onClick={() => navigate("/brands")}
+                    className="text-xs font-medium text-primary active:scale-95"
+                  >
+                    View all
+                  </button>
+                </div>
+                <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+                  {favoriteBrands.map((brand: any) => {
+                    const count = visitCountForBrand(brand.id);
+                    const progress = Math.min((count / brand.milestone_visits) * 100, 100);
+                    const expPts = expiringPointsForBrand(brand.id);
+                    const extConn = loyaltyConnections.find((c: any) => c.brand_id === brand.id);
+                    const extPts = extConn?.external_points_balance ?? 0;
+                    const visibleFields = getVisibleWidgetFields();
+                    return (
+                      <button
+                        key={brand.id}
+                        onClick={() => setFavChoiceBrand(brand)}
+                        className="relative flex shrink-0 min-w-[8rem] max-w-[10rem] w-auto flex-col items-center gap-1.5 rounded-2xl border border-border bg-card px-3 py-4 transition-all hover:shadow-sm active:scale-[0.96]"
+                      >
+                        {(brand.loyalty_api_url || brand.website_url) && (
+                          <ExternalLink className="absolute top-2.5 right-2.5 h-3 w-3 text-muted-foreground" />
+                        )}
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-2xl">
+                          {brand.logo_emoji}
+                        </div>
+                        <p className="text-xs font-semibold w-full text-center break-words line-clamp-2">
+                          {brand.name}
+                        </p>
+                        {visibleFields.includes("category") && brand.category && (
+                          <p className="text-[10px] text-muted-foreground">{brand.category}</p>
+                        )}
+                        {visibleFields.includes("progress") && (
+                          <>
+                            <Progress value={progress} className="h-1 w-full" />
+                            <p className="text-[10px] tabular-nums text-muted-foreground">{count}/{brand.milestone_visits}</p>
+                          </>
+                        )}
+                        {visibleFields.includes("milestonePoints") && (
+                          <p className="text-[10px] font-semibold text-primary">{brand.milestone_points} pts</p>
+                        )}
+                        {visibleFields.includes("loyaltyProvider") && brand.loyalty_provider && (
+                          <p className="text-[10px] text-muted-foreground truncate w-full text-center">{brand.loyalty_provider}</p>
+                        )}
+                        {visibleFields.includes("visitExpiry") && (
+                          <p className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                            <CalendarClock className="h-2.5 w-2.5" />{brand.visit_expiry_months}mo expiry
+                          </p>
+                        )}
+                        {visibleFields.includes("websiteLink") && brand.website_url && (
+                          <p className="text-[10px] text-primary flex items-center gap-0.5">
+                            <Globe className="h-2.5 w-2.5" />Website
+                          </p>
+                        )}
+                        {visibleFields.includes("externalPoints") && extPts > 0 && (
+                          <p className="text-[10px] font-medium text-foreground/70 flex items-center gap-0.5">
+                            <Link2 className="h-2.5 w-2.5" />{extPts.toLocaleString()}
+                          </p>
+                        )}
+                        {visibleFields.includes("expiringPoints") && expPts > 0 && (
+                          <p className="text-[9px] font-medium text-destructive leading-tight text-center">⚠ {expPts} pts expiring soon</p>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+
+          case "activity":
+            return hasActivity ? (
+              <div key="activity" className="px-6 py-4">
+                <h2 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Recent activity</h2>
+                <div className="space-y-2">
+                  {recentEntries!.map((entry) => (
+                    <div key={entry.id} className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
+                      <div>
+                        <p className="text-sm font-medium">{(entry as any).merchants?.name ?? "Unknown"}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(entry.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                      </div>
+                      <span className={`text-sm font-bold tabular-nums ${entry.delta_points > 0 ? "text-[hsl(var(--success))]" : "text-destructive"}`}>
+                        {entry.delta_points > 0 ? "+" : ""}{entry.delta_points}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div key="activity-empty" className="flex flex-1 flex-col items-center justify-center px-6 py-8 text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted mb-4">
+                  <Gift className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <h3 className="font-semibold">No rewards yet</h3>
+                <p className="mt-1 max-w-xs text-sm text-muted-foreground">Visit a partner merchant and scan their QR code to start earning points.</p>
+                <Button variant="outline" className="mt-4 active:scale-[0.97]" onClick={() => navigate("/scan")}>Scan a QR code</Button>
+              </div>
+            );
+
+          default:
+            return null;
+        }
+      })}
       <Dialog open={!!loyaltyChoiceConn} onOpenChange={(open) => !open && setLoyaltyChoiceConn(null)}>
         <DialogContent className="max-w-xs rounded-2xl">
           <DialogHeader>
