@@ -38,6 +38,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { requestNotificationPermission } from "@/hooks/useGeofence";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 export default function Profile() {
   const { user, signOut } = useAuth();
