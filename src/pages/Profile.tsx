@@ -281,6 +281,7 @@ export default function Profile() {
                     maxLength={2}
                   />
                 </div>
+              </div>
               <div className="flex gap-2 pt-1">
                 <Button
                   variant="outline"
