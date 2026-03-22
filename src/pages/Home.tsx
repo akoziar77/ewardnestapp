@@ -4,7 +4,7 @@ import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { QrCode, Gift, TrendingUp, History, UserCircle, Store, Heart, Sparkles, Link2 } from "lucide-react";
+import { QrCode, Gift, TrendingUp, History, UserCircle, Store, Heart, Sparkles, Link2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
@@ -298,8 +298,11 @@ export default function Home() {
                       navigate("/brands");
                     }
                   }}
-                  className="flex shrink-0 w-32 flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-sm active:scale-[0.96]"
+                  className="relative flex shrink-0 w-32 flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-sm active:scale-[0.96]"
                 >
+                  {(brand.loyalty_api_url || brand.website_url) && (
+                    <ExternalLink className="absolute top-2.5 right-2.5 h-3 w-3 text-muted-foreground" />
+                  )}
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-2xl">
                     {brand.logo_emoji}
                   </div>
