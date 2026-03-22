@@ -427,6 +427,45 @@ export default function Brands() {
                           ))}
                         </div>
                       )}
+
+                      {/* Loyalty program connect */}
+                      <div className="mt-3 pt-3 border-t border-border">
+                        {(() => {
+                          const conn = getLoyaltyConnection(brand.id);
+                          return conn ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setLoyaltyBrandId(brand.id);
+                              }}
+                              className="flex w-full items-center gap-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 px-3 py-2 text-left transition-colors hover:bg-emerald-100 dark:hover:bg-emerald-900/30 active:scale-[0.98]"
+                            >
+                              <Link2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 truncate">
+                                  {conn.provider_name}
+                                </p>
+                                <p className="text-[10px] text-emerald-600/70 dark:text-emerald-400/70">
+                                  {conn.external_points_balance != null
+                                    ? `${conn.external_points_balance.toLocaleString()} pts`
+                                    : "Connected"}
+                                </p>
+                              </div>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setLoyaltyBrandId(brand.id);
+                              }}
+                              className="flex w-full items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground hover:border-foreground/30 active:scale-[0.98]"
+                            >
+                              <Link2 className="h-3.5 w-3.5" />
+                              Connect loyalty program
+                            </button>
+                          );
+                        })()}
+                      </div>
                     </div>
                   )}
                 </div>
