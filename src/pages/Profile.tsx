@@ -382,7 +382,54 @@ export default function Profile() {
                   <Bell className="h-5 w-5 text-muted-foreground" />
                   <p className="text-sm font-medium">Push notifications</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch
+                  checked={notificationsEnabled}
+                  onCheckedChange={async (checked) => {
+                    if (checked) {
+                      const granted = await requestNotificationPermission();
+                      setNotificationsEnabled(granted);
+                      if (!granted) toast.error("Notification permission was denied");
+                    } else {
+                      setNotificationsEnabled(false);
+                    }
+                    localStorage.setItem("notifications_enabled", String(checked));
+                  }}
+                />
+              </div>
+              <div className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <Locate className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm font-medium">Geofence alerts</p>
+                    <p className="text-xs text-muted-foreground">Get notified near brand locations</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={geofenceEnabled}
+                  onCheckedChange={async (checked) => {
+                    if (checked) {
+                      const granted = await requestNotificationPermission();
+                      if (!granted) {
+                        toast.error("Enable notifications first");
+                        return;
+                      }
+                      // Also request location
+                      navigator.geolocation.getCurrentPosition(
+                        () => {
+                          setGeofenceEnabled(true);
+                          localStorage.setItem("geofence_enabled", "true");
+                          toast.success("Geofence alerts enabled");
+                        },
+                        () => {
+                          toast.error("Location permission is required for geofence alerts");
+                        }
+                      );
+                    } else {
+                      setGeofenceEnabled(false);
+                      localStorage.setItem("geofence_enabled", "false");
+                    }
+                  }}
+                />
               </div>
               <div className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-3">
