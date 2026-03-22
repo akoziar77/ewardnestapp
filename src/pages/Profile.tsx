@@ -483,6 +483,24 @@ export default function Profile() {
             </div>
           </div>
 
+          {/* Subscription */}
+          <div className="space-y-1">
+            <p className="px-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+              Subscription
+            </p>
+            <button
+              onClick={() => navigate("/pricing")}
+              className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:bg-muted/50 active:scale-[0.98]"
+            >
+              <Crown className="h-5 w-5 text-primary shrink-0" />
+              <div className="flex-1 text-left min-w-0">
+                <p className="text-sm font-medium">Plans & Pricing</p>
+                <p className="text-xs text-muted-foreground capitalize">{subscriptionTier} plan</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+            </button>
+          </div>
+
           {/* Sign out */}
           <button
             onClick={handleSignOut}
