@@ -13,6 +13,11 @@ interface BrandLocationPoint {
   latitude: number;
   longitude: number;
   geofence_radius_meters: number;
+  geofence_id?: string;
+  triggers?: string[];
+  dwell_seconds?: number | null;
+  active_hours?: { day_of_week: string; start_time: string; end_time: string }[] | null;
+  priority?: number;
 }
 
 function haversineDistance(
