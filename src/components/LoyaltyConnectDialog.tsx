@@ -88,6 +88,7 @@ export default function LoyaltyConnectDialog({
   const [isEditing, setIsEditing] = useState(false);
   const [editMemberId, setEditMemberId] = useState("");
   const [editPoints, setEditPoints] = useState("");
+  const [editPassword, setEditPassword] = useState("");
 
   const handleUpdate = async () => {
     if (!user || !connection) return;
