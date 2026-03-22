@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
@@ -6,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { QrCode, Gift, TrendingUp, History, UserCircle, Store, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 
 export default function Home() {
   const { user } = useAuth();
