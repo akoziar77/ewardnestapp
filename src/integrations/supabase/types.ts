@@ -306,32 +306,41 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           avatar_url: string | null
+          city: string | null
           created_at: string
           display_name: string | null
           id: string
           onboarding_completed: boolean
           phone: string | null
+          state: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          address?: string | null
           avatar_url?: string | null
+          city?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
           onboarding_completed?: boolean
           phone?: string | null
+          state?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          address?: string | null
           avatar_url?: string | null
+          city?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
           onboarding_completed?: boolean
           phone?: string | null
+          state?: string | null
           updated_at?: string
           user_id?: string
         }
