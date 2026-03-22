@@ -200,12 +200,21 @@ export default function Home() {
           <p className="text-sm text-muted-foreground">Good to see you 👋</p>
           <h1 className="text-xl font-bold tracking-tight">{greeting}</h1>
         </div>
-        <button
-          onClick={() => navigate("/profile")}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:text-foreground active:scale-95"
-        >
-          <UserCircle className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setEditorOpen(true)}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:text-foreground active:scale-95"
+            title="Edit layout"
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => navigate("/profile")}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors hover:text-foreground active:scale-95"
+          >
+            <UserCircle className="h-5 w-5" />
+          </button>
+        </div>
       </header>
 
       {/* Points card */}
