@@ -176,9 +176,12 @@ export default function LoyaltyConnectDialog({
   };
 
   const resetForm = () => {
-    setProviderName("");
-    setIsCustomProvider(false);
-    setApiEndpoint("");
+    setProviderName(initialProvider);
+    setIsCustomProvider(!isPreset && !!initialProvider);
+    setApiEndpoint(() => {
+      if (isPreset) return LOYALTY_PRESETS.find((p) => p.name === initialProvider)?.endpoint || "";
+      return loyaltyApiUrl || "";
+    });
     setAccessToken("");
     setMemberId("");
     setPassword("");
