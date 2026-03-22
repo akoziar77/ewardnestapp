@@ -206,11 +206,12 @@ export default function Home() {
                 (count / brand.milestone_visits) * 100,
                 100
               );
+              const expPts = expiringPointsForBrand(brand.id);
               return (
                 <button
                   key={brand.id}
                   onClick={() => navigate("/brands")}
-                  className="flex shrink-0 w-32 flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-sm active:scale-[0.96]"
+                  className="flex shrink-0 w-32 flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-sm active:scale-[0.96]"
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-2xl">
                     {brand.logo_emoji}
@@ -225,6 +226,11 @@ export default function Home() {
                   <p className="text-[10px] font-semibold text-primary">
                     {brand.milestone_points} pts
                   </p>
+                  {expPts > 0 && (
+                    <p className="text-[9px] font-medium text-destructive leading-tight text-center">
+                      ⚠ {expPts} pts expiring soon
+                    </p>
+                  )}
                 </button>
               );
             })}
