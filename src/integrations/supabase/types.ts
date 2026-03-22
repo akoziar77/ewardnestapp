@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      brand_gem_mapping: {
+        Row: {
+          brand_id: string
+          gem_id: string
+          id: string
+          linked_at: string
+          location_id: string
+          source_id: string | null
+          status: string
+        }
+        Insert: {
+          brand_id: string
+          gem_id: string
+          id?: string
+          linked_at?: string
+          location_id: string
+          source_id?: string | null
+          status?: string
+        }
+        Update: {
+          brand_id?: string
+          gem_id?: string
+          id?: string
+          linked_at?: string
+          location_id?: string
+          source_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_gem_mapping_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_locations: {
         Row: {
           address_line: string | null
@@ -22,6 +60,7 @@ export type Database = {
           country: string | null
           created_at: string
           geofence_radius_meters: number
+          geometry: unknown
           id: string
           is_headquarters: boolean
           latitude: number | null
@@ -38,6 +77,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           geofence_radius_meters?: number
+          geometry?: unknown
           id?: string
           is_headquarters?: boolean
           latitude?: number | null
@@ -54,6 +94,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           geofence_radius_meters?: number
+          geometry?: unknown
           id?: string
           is_headquarters?: boolean
           latitude?: number | null
@@ -330,6 +371,156 @@ export type Database = {
             columns: ["brand_id"]
             isOneToOne: false
             referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      geofence_audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          entity_id: string
+          entity_type: string
+          id: string
+          job_id: string
+          source_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          job_id: string
+          source_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          job_id?: string
+          source_id?: string | null
+        }
+        Relationships: []
+      }
+      geofence_import_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          errors: Json | null
+          id: string
+          job_id: string
+          review_csv_url: string | null
+          source_id: string
+          status: string
+          summary: Json | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          errors?: Json | null
+          id?: string
+          job_id: string
+          review_csv_url?: string | null
+          source_id: string
+          status?: string
+          summary?: Json | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          errors?: Json | null
+          id?: string
+          job_id?: string
+          review_csv_url?: string | null
+          source_id?: string
+          status?: string
+          summary?: Json | null
+        }
+        Relationships: []
+      }
+      geofences: {
+        Row: {
+          active_hours: Json | null
+          brand_id: string
+          brand_location_id: string | null
+          created_at: string
+          dwell_seconds: number | null
+          geofence_id: string
+          geometry: unknown
+          id: string
+          import_hash: string | null
+          location_id: string
+          metadata: Json | null
+          polygon_coords: Json | null
+          priority: number
+          radius_m: number
+          source_id: string | null
+          status: string
+          triggers: string[]
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          active_hours?: Json | null
+          brand_id: string
+          brand_location_id?: string | null
+          created_at?: string
+          dwell_seconds?: number | null
+          geofence_id: string
+          geometry?: unknown
+          id?: string
+          import_hash?: string | null
+          location_id: string
+          metadata?: Json | null
+          polygon_coords?: Json | null
+          priority?: number
+          radius_m?: number
+          source_id?: string | null
+          status?: string
+          triggers?: string[]
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          active_hours?: Json | null
+          brand_id?: string
+          brand_location_id?: string | null
+          created_at?: string
+          dwell_seconds?: number | null
+          geofence_id?: string
+          geometry?: unknown
+          id?: string
+          import_hash?: string | null
+          location_id?: string
+          metadata?: Json | null
+          polygon_coords?: Json | null
+          priority?: number
+          radius_m?: number
+          source_id?: string | null
+          status?: string
+          triggers?: string[]
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "geofences_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "geofences_brand_location_id_fkey"
+            columns: ["brand_location_id"]
+            isOneToOne: false
+            referencedRelation: "brand_locations"
             referencedColumns: ["id"]
           },
         ]
