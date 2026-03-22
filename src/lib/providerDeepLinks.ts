@@ -72,6 +72,7 @@ const PROVIDER_LINKS: Record<string, ProviderLink> = {
     playStoreUrl: "https://play.google.com/store/apps/details?id=com.marriott.mrt",
     webUrl: "https://www.marriott.com/loyalty.mi",
     appName: "Marriott Bonvoy",
+    registrationUrl: "https://www.marriott.com/loyalty/createAccount/createAccountPage1.mi",
   },
   "world of hyatt": {
     appStoreUrl: "https://apps.apple.com/app/world-of-hyatt/id632850498",
