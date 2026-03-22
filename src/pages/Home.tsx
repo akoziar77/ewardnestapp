@@ -23,6 +23,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { getWidgetLayout, saveWidgetLayout, type HomeWidget } from "@/lib/homeWidgets";
 import HomeWidgetEditor from "@/components/HomeWidgetEditor";
+import { useGeofence } from "@/hooks/useGeofence";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +36,11 @@ export default function Home() {
   const navigate = useNavigate();
   const [widgetLayout, setWidgetLayout] = useState<HomeWidget[]>(getWidgetLayout);
   const [editorOpen, setEditorOpen] = useState(false);
+
+  // Activate geofence monitoring when enabled in settings
+  const geofenceActive = typeof window !== "undefined" && localStorage.getItem("geofence_enabled") === "true";
+  useGeofence();
+
 
   const handleSaveLayout = (widgets: HomeWidget[]) => {
     setWidgetLayout(widgets);
