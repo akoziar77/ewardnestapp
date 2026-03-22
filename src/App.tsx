@@ -31,6 +31,7 @@ import ManageTiers from "./pages/ManageTiers";
 import AdminRoles from "./pages/admin/AdminRoles";
 import AdminPageAccess from "./pages/admin/AdminPageAccess";
 import AdminPrivacyPolicy from "./pages/admin/AdminPrivacyPolicy";
+import AdminQuickActions from "./pages/admin/AdminQuickActions";
 import ConsentBanner from "./components/ConsentBanner";
 import NotFound from "./pages/NotFound";
 
