@@ -31,6 +31,7 @@ import ManageTiers from "./pages/ManageTiers";
 import AdminRoles from "./pages/admin/AdminRoles";
 import AdminPageAccess from "./pages/admin/AdminPageAccess";
 import AdminPrivacyPolicy from "./pages/admin/AdminPrivacyPolicy";
+import AdminQuickActions from "./pages/admin/AdminQuickActions";
 import ConsentBanner from "./components/ConsentBanner";
 import NotFound from "./pages/NotFound";
 
@@ -79,6 +80,7 @@ function AppRoutes() {
         <Route path="/admin/roles" element={<PageGate pageKey="admin_roles"><AdminRoles /></PageGate>} />
         <Route path="/admin/page-access" element={<PageGate pageKey="admin_page_access"><AdminPageAccess /></PageGate>} />
         <Route path="/admin/privacy-policy" element={<PageGate pageKey="admin_privacy_policy"><AdminPrivacyPolicy /></PageGate>} />
+        <Route path="/admin/quick-actions" element={<PageGate pageKey="admin_quick_actions"><AdminQuickActions /></PageGate>} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

@@ -4,7 +4,7 @@ import BottomNav from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { QrCode, Gift, TrendingUp, History, UserCircle, Store, Heart, Sparkles, Link2, ExternalLink, Globe, CalendarClock, Smartphone, Pencil, Settings, RotateCcw, Download, MapPin, UserPlus, Unlink } from "lucide-react";
+import { QrCode, Gift, TrendingUp, History, UserCircle, Store, Heart, Sparkles, Link2, ExternalLink, Globe, CalendarClock, Smartphone, Pencil, Settings, RotateCcw, Download, MapPin, UserPlus, Unlink, Clock, Star, Shield, Bell, Search, Calendar, Camera, Bookmark, Zap } from "lucide-react";
 import { getProviderLinks, getOpenAppUrl, getProviderLink, buildRegistrationUrl } from "@/lib/providerDeepLinks";
 import { autoConnectOnRegister } from "@/lib/autoConnectOnRegister";
 import { Button } from "@/components/ui/button";
@@ -164,6 +164,22 @@ export default function Home() {
       return (data ?? []) as any[];
     },
     enabled: connBrandIds.length > 0,
+  });
+
+  const quickActionIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    QrCode, Gift, Store, Clock, Heart, MapPin, Star, Settings, History, TrendingUp, UserPlus, Sparkles, Shield, Bell, Search, Calendar, Camera, Bookmark, Zap,
+  };
+
+  const { data: quickActions } = useQuery({
+    queryKey: ["quick-actions"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("quick_actions" as any)
+        .select("*")
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return data as any[];
+    },
   });
 
   const [favChoiceBrand, setFavChoiceBrand] = useState<any | null>(null);
@@ -365,23 +381,21 @@ export default function Home() {
                   Quick actions
                 </h2>
                 <div className="grid grid-cols-4 gap-3">
-                  {[
-                    { icon: QrCode, label: "Scan", color: "bg-primary/10 text-primary", onClick: () => navigate("/scan") },
-                    { icon: Gift, label: "Rewards", color: "bg-secondary/10 text-secondary", onClick: () => navigate("/rewards") },
-                    { icon: Store, label: "Brands", color: "bg-primary/10 text-primary", onClick: () => navigate("/brands") },
-                    { icon: History, label: "History", color: "bg-muted text-muted-foreground", onClick: () => navigate("/history") },
-                  ].map(({ icon: Icon, label, color, onClick }) => (
-                    <button
-                      key={label}
-                      onClick={onClick}
-                      className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-sm active:scale-[0.96]"
-                    >
-                      <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${color}`}>
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <span className="text-sm font-medium">{label}</span>
-                    </button>
-                  ))}
+                  {(quickActions ?? []).filter((a: any) => a.visible).map((a: any) => {
+                    const Icon = quickActionIconMap[a.icon_name] || QrCode;
+                    return (
+                      <button
+                        key={a.id}
+                        onClick={() => navigate(a.route)}
+                        className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 transition-all hover:shadow-sm active:scale-[0.96]"
+                      >
+                        <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${a.color_class}`}>
+                          <Icon className="h-6 w-6" />
+                        </div>
+                        <span className="text-sm font-medium">{a.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             );
