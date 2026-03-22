@@ -82,6 +82,7 @@ function AppRoutes() {
         <Route path="/admin/page-access" element={<PageGate pageKey="admin_page_access"><AdminPageAccess /></PageGate>} />
         <Route path="/admin/privacy-policy" element={<PageGate pageKey="admin_privacy_policy"><AdminPrivacyPolicy /></PageGate>} />
         <Route path="/admin/quick-actions" element={<PageGate pageKey="admin_quick_actions"><AdminQuickActions /></PageGate>} />
+        <Route path="/admin/onboarding" element={<PageGate pageKey="admin_onboarding"><AdminOnboarding /></PageGate>} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
