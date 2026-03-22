@@ -38,6 +38,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { requestNotificationPermission } from "@/hooks/useGeofence";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -53,6 +54,7 @@ export default function Profile() {
     localStorage.getItem("geofence_enabled") === "true"
   );
   const { theme, setTheme } = useTheme();
+  const { subscribe: subscribePush, isSupported: pushSupported } = usePushNotifications();
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile", user?.id],
@@ -405,6 +407,9 @@ export default function Profile() {
                   onCheckedChange={async (checked) => {
                     if (checked) {
                       const granted = await requestNotificationPermission();
+                      if (granted && pushSupported) {
+                        await subscribePush();
+                      }
                       setNotificationsEnabled(granted);
                       if (!granted) toast.error("Notification permission was denied");
                     } else {
