@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Link2, Unlink, RefreshCw, Key, Globe, User, Coins } from "lucide-react";
+import { Link2, Unlink, RefreshCw, Key, Globe, User, Coins, UserPlus } from "lucide-react";
+import { buildRegistrationUrl } from "@/lib/providerDeepLinks";
 
 const LOYALTY_PRESETS = [
   { name: "Starbucks Rewards", endpoint: "https://api.starbucks.com/loyalty/v1/balance" },
@@ -67,6 +69,32 @@ export default function LoyaltyConnectDialog({
   onConnectionChange,
 }: Props) {
   const { user } = useAuth();
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name, phone, zip_code")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const registrationUrl = useMemo(() => {
+    if (!loyaltyProvider) return null;
+    const nameParts = (profile?.display_name || "").split(" ");
+    return buildRegistrationUrl(loyaltyProvider, {
+      firstName: nameParts[0] || undefined,
+      lastName: nameParts.slice(1).join(" ") || undefined,
+      email: user?.email || undefined,
+      phone: profile?.phone || undefined,
+      zipCode: profile?.zip_code || undefined,
+    });
+  }, [loyaltyProvider, profile, user?.email]);
   
   // Auto-populate from brand's loyalty_provider
   const initialProvider = loyaltyProvider || "";
@@ -425,6 +453,19 @@ export default function LoyaltyConnectDialog({
               <Link2 className="h-4 w-4" />
               {loading ? "Connecting…" : "Connect program"}
             </Button>
+
+            {registrationUrl && !connection && (
+              <Button
+                variant="outline"
+                className="w-full gap-2 active:scale-[0.97]"
+                asChild
+              >
+                <a href={registrationUrl} target="_blank" rel="noopener noreferrer">
+                  <UserPlus className="h-4 w-4" />
+                  Register for {loyaltyProvider}
+                </a>
+              </Button>
+            )}
           </div>
         )}
       </DialogContent>
