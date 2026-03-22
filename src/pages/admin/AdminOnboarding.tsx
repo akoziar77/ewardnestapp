@@ -73,6 +73,8 @@ export default function AdminOnboarding() {
   const [editing, setEditing] = useState<OnboardingStep | null>(null);
   const [deleting, setDeleting] = useState<OnboardingStep | null>(null);
   const [isNew, setIsNew] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
+  const [previewIndex, setPreviewIndex] = useState(0);
 
   /* ── queries ── */
   const { data: steps = [], isLoading } = useQuery({
