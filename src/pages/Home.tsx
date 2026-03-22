@@ -61,8 +61,27 @@ export default function Home() {
     queryFn: async () => {
       const { data } = await supabase
         .from("brand_visits")
-        .select("brand_id")
+        .select("brand_id, created_at")
         .eq("user_id", user!.id);
+      return data ?? [];
+    },
+    enabled: !!user,
+  });
+
+  // Fetch ledger entries expiring within next 30 days per brand
+  const { data: expiringEntries = [] } = useQuery({
+    queryKey: ["expiring-points", user?.id],
+    queryFn: async () => {
+      const now = new Date().toISOString();
+      const nextMonth = new Date();
+      nextMonth.setDate(nextMonth.getDate() + 30);
+      const { data } = await supabase
+        .from("ledger_entries")
+        .select("delta_points, expires_at, metadata")
+        .eq("user_id", user!.id)
+        .eq("type", "brand_milestone")
+        .gt("expires_at", now)
+        .lte("expires_at", nextMonth.toISOString());
       return data ?? [];
     },
     enabled: !!user,
@@ -85,8 +104,21 @@ export default function Home() {
     ? `Hey, ${profile.display_name}`
     : "Hey there";
 
-  const visitCountForBrand = (brandId: string) =>
-    brandVisits.filter((v: any) => v.brand_id === brandId).length;
+  const visitCountForBrand = (brandId: string) => {
+    const brand = favoriteBrands.find((b: any) => b.id === brandId);
+    const expiryMonths = brand?.visit_expiry_months ?? 6;
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - expiryMonths);
+    return brandVisits.filter(
+      (v: any) => v.brand_id === brandId && new Date(v.created_at) > cutoff
+    ).length;
+  };
+
+  const expiringPointsForBrand = (brandId: string) => {
+    return expiringEntries
+      .filter((e: any) => (e.metadata as any)?.brand_id === brandId)
+      .reduce((sum: number, e: any) => sum + e.delta_points, 0);
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-20">
