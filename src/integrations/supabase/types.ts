@@ -771,6 +771,81 @@ export type Database = {
           },
         ]
       }
+      subscription_features: {
+        Row: {
+          created_at: string
+          description: string | null
+          feature_key: string
+          id: string
+          label: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          feature_key: string
+          id?: string
+          label: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          feature_key?: string
+          id?: string
+          label?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      subscription_tiers: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          interval: string
+          is_free: boolean
+          name: string
+          price_cents: number
+          price_label: string
+          slug: string
+          sort_order: number
+          stripe_price_id: string | null
+          stripe_product_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          interval?: string
+          is_free?: boolean
+          name: string
+          price_cents?: number
+          price_label?: string
+          slug: string
+          sort_order?: number
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          interval?: string
+          is_free?: boolean
+          name?: string
+          price_cents?: number
+          price_label?: string
+          slug?: string
+          sort_order?: number
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -794,6 +869,42 @@ export type Database = {
           reason?: string
         }
         Relationships: []
+      }
+      tier_feature_access: {
+        Row: {
+          enabled: boolean
+          feature_id: string
+          id: string
+          tier_id: string
+        }
+        Insert: {
+          enabled?: boolean
+          feature_id: string
+          id?: string
+          tier_id: string
+        }
+        Update: {
+          enabled?: boolean
+          feature_id?: string
+          id?: string
+          tier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tier_feature_access_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_features"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tier_feature_access_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_merchants: {
         Row: {
