@@ -335,6 +335,11 @@ export default function Brands() {
                           ⚠ {expiring} visit{expiring > 1 ? "s" : ""} expiring next month
                         </p>
                       )}
+                      {expiringPts > 0 && (
+                        <p className="mt-0.5 text-[10px] text-destructive font-medium">
+                          ⚠ {expiringPts} pts expiring next month
+                        </p>
+                      )}
                     </div>
                   </button>
 
