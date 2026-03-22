@@ -313,15 +313,7 @@ export default function Home() {
               return (
                 <button
                   key={brand.id}
-                  onClick={() => {
-                    if (brand.loyalty_api_url) {
-                      window.open(brand.loyalty_api_url, "_blank", "noopener");
-                    } else if (brand.website_url) {
-                      window.open(brand.website_url, "_blank", "noopener");
-                    } else {
-                      navigate("/brands");
-                    }
-                  }}
+                  onClick={() => setFavChoiceBrand(brand)}
                   className="relative flex shrink-0 min-w-[8rem] max-w-[10rem] w-auto flex-col items-center gap-1.5 rounded-2xl border border-border bg-card px-3 py-4 transition-all hover:shadow-sm active:scale-[0.96]"
                 >
                   {(brand.loyalty_api_url || brand.website_url) && (
