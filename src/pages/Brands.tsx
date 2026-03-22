@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, MapPin, Trophy, Sparkles, Clock, ChevronDown, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, MapPin, Trophy, Sparkles, Clock, ChevronDown, Trash2, Heart } from "lucide-react";
 import { format } from "date-fns";
 
 interface Brand {
@@ -113,6 +113,41 @@ export default function Brands() {
     onError: () => toast.error("Failed to remove visit"),
   });
 
+  const { data: favoriteIds = [] } = useQuery({
+    queryKey: ["favorite-brands", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("favorite_brands")
+        .select("brand_id")
+        .eq("user_id", user!.id);
+      return (data ?? []).map((f: any) => f.brand_id as string);
+    },
+    enabled: !!user,
+  });
+
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async (brandId: string) => {
+      const isFav = favoriteIds.includes(brandId);
+      if (isFav) {
+        const { error } = await supabase
+          .from("favorite_brands")
+          .delete()
+          .eq("user_id", user!.id)
+          .eq("brand_id", brandId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("favorite_brands")
+          .insert({ user_id: user!.id, brand_id: brandId });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["favorite-brands", user?.id] });
+    },
+    onError: () => toast.error("Failed to update favorite"),
+  });
+
   if (loading || !user) return null;
 
   const visitCountForBrand = (brandId: string) =>
@@ -190,6 +225,7 @@ export default function Brands() {
               const milestoneReached = count >= brand.milestone_visits;
               const isExpanded = expandedBrandId === brand.id;
               const brandVisits = visitsForBrand(brand.id);
+              const isFavorite = favoriteIds.includes(brand.id);
 
               return (
                 <div
@@ -203,8 +239,22 @@ export default function Brands() {
                     }
                     className="flex w-full items-start gap-3 p-4 text-left active:scale-[0.99] transition-transform"
                   >
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">
+                    <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">
                       {brand.logo_emoji}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavoriteMutation.mutate(brand.id);
+                        }}
+                        className={`absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full transition-all active:scale-90 ${
+                          isFavorite
+                            ? "bg-destructive text-destructive-foreground"
+                            : "bg-muted-foreground/20 text-muted-foreground hover:bg-muted-foreground/30"
+                        }`}
+                        title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                      >
+                        <Heart className={`h-2.5 w-2.5 ${isFavorite ? "fill-current" : ""}`} />
+                      </button>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
