@@ -225,6 +225,7 @@ export default function Brands() {
               const milestoneReached = count >= brand.milestone_visits;
               const isExpanded = expandedBrandId === brand.id;
               const brandVisits = visitsForBrand(brand.id);
+              const isFavorite = favoriteIds.includes(brand.id);
 
               return (
                 <div
