@@ -93,7 +93,7 @@ export default function BrandMapView({ brands, onBrandClick }: BrandMapViewProps
         <LocateUser />
 
         {brandsWithLocation.map((brand) => (
-          <span key={brand.id}>
+          <React.Fragment key={brand.id}>
             {/* Geofence radius circle */}
             <Circle
               center={[brand.latitude, brand.longitude]}
@@ -134,7 +134,7 @@ export default function BrandMapView({ brands, onBrandClick }: BrandMapViewProps
                 </div>
               </Popup>
             </Marker>
-          </span>
+          </React.Fragment>
         ))}
       </MapContainer>
 
