@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTheme } from "next-themes";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -17,6 +18,7 @@ import {
   LogOut,
   Shield,
   Bell,
+  Moon,
   ChevronRight,
   Save,
 } from "lucide-react";
@@ -26,6 +28,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile", user?.id],
@@ -227,6 +230,16 @@ export default function Profile() {
                   <p className="text-sm font-medium">Push notifications</p>
                 </div>
                 <Switch defaultChecked />
+              </div>
+              <div className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <Moon className="h-5 w-5 text-muted-foreground" />
+                  <p className="text-sm font-medium">Dark mode</p>
+                </div>
+                <Switch
+                  checked={theme === "dark"}
+                  onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+                />
               </div>
             </div>
           </div>
