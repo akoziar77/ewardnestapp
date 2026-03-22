@@ -110,7 +110,21 @@ export default function Home() {
     enabled: !!user,
   });
 
-  // Compute total points from latest balance per merchant
+  // Fetch brand details for loyalty connections (to get loyalty_api_url)
+  const connBrandIds = loyaltyConnections.map((c: any) => c.brand_id);
+  const { data: connBrands = [] } = useQuery({
+    queryKey: ["conn-brands", connBrandIds],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("brands")
+        .select("id, name, loyalty_api_url")
+        .in("id", connBrandIds);
+      return (data ?? []) as any[];
+    },
+    enabled: connBrandIds.length > 0,
+  });
+
+  const [loyaltyChoiceConn, setLoyaltyChoiceConn] = useState<any | null>(null);
   const totalPoints = (() => {
     if (!recentEntries?.length) return 0;
     const merchantBalances = new Map<string, number>();
