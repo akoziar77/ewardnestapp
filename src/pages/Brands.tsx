@@ -255,7 +255,18 @@ export default function Brands() {
     enabled: !!user,
   });
 
-  const syncAttempted = useRef(false);
+  const { data: geofences = [] } = useQuery({
+    queryKey: ["geofences"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("geofences")
+        .select("geofence_id, location_id, brand_id, brand_location_id, type, radius_m, triggers, dwell_seconds, active_hours, priority, status");
+      return (data ?? []) as any[];
+    },
+    enabled: !!user,
+  });
+
+
   useEffect(() => {
     if (!user || syncAttempted.current || loyaltyConnections.length === 0) return;
     syncAttempted.current = true;
