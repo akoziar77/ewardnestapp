@@ -75,6 +75,7 @@ export default function Profile() {
           address: formAddress.trim() || null,
           city: formCity.trim() || null,
           state: formState.trim() || null,
+          zip_code: formZip.trim() || null,
         } as any)
         .eq("user_id", user!.id);
       if (error) throw error;
