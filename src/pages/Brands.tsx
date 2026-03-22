@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Plus, MapPin, Trophy, Sparkles, Clock, ChevronDown, Trash2, Heart, Link2, Search, ExternalLink, Settings, Globe, Tag, CalendarClock, Award, Eye } from "lucide-react";
 import { getHiddenCategories } from "@/pages/BrandSettings";
 import { format } from "date-fns";
-import { WIDGET_FIELDS, getVisibleWidgetFields, setVisibleWidgetFields } from "@/lib/widgetFields";
+import { WIDGET_FIELDS, getVisibleWidgetFields, setVisibleWidgetFields, resetVisibleWidgetFields } from "@/lib/widgetFields";
 
 interface Brand {
   id: string;
