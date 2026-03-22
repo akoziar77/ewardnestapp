@@ -21,6 +21,7 @@ import MerchantRewards from "./pages/merchant/MerchantRewards";
 import MerchantRedemptions from "./pages/merchant/MerchantRedemptions";
 import MerchantQR from "./pages/merchant/MerchantQR";
 import MerchantOnboarding from "./pages/merchant/MerchantOnboarding";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
