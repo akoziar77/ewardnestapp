@@ -19,8 +19,9 @@ import {
 import {
   ArrowLeft, Plus, GripVertical, Pencil, Trash2, ArrowUp, ArrowDown,
   Bird, Gift, Sparkles, Bell, QrCode, Star, Heart, Zap, Shield, MapPin,
-  Trophy, Crown, Flame, Target, Rocket, type LucideIcon,
+  Trophy, Crown, Flame, Target, Rocket, Eye, EyeOff, type LucideIcon,
 } from "lucide-react";
+import OnboardingStepPreview from "@/components/onboarding/OnboardingStepPreview";
 
 /* ── icon registry ─────────────────────────────────────── */
 const ICON_MAP: Record<string, LucideIcon> = {
