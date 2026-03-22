@@ -411,6 +411,18 @@ export default function Brands() {
                   {/* Expanded visit history */}
                   {isExpanded && (
                     <div className="border-t border-border px-4 pb-4">
+                      {brand.website_url && (
+                        <a
+                          href={brand.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-1.5 pt-3 pb-1 text-xs font-medium text-primary hover:underline active:scale-[0.98]"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          Visit website
+                        </a>
+                      )}
                       <div className="flex items-center justify-between pt-3 pb-2">
                         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                           Visit history
