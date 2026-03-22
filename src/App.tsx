@@ -35,6 +35,7 @@ import AdminPrivacyPolicy from "./pages/admin/AdminPrivacyPolicy";
 import AdminQuickActions from "./pages/admin/AdminQuickActions";
 import AdminOnboarding from "./pages/admin/AdminOnboarding";
 import AdminPageDirectory from "./pages/admin/AdminPageDirectory";
+import AdminBoosters from "./pages/admin/AdminBoosters";
 import ConsentBanner from "./components/ConsentBanner";
 import NotFound from "./pages/NotFound";
 
@@ -87,6 +88,7 @@ function AppRoutes() {
         <Route path="/admin/quick-actions" element={<PageGate pageKey="admin_quick_actions"><AdminQuickActions /></PageGate>} />
         <Route path="/admin/onboarding" element={<PageGate pageKey="admin_onboarding"><AdminOnboarding /></PageGate>} />
         <Route path="/admin/pages" element={<PageGate pageKey="admin_page_directory"><AdminPageDirectory /></PageGate>} />
+        <Route path="/admin/boosters" element={<PageGate pageKey="admin_boosters"><AdminBoosters /></PageGate>} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
