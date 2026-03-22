@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Plus, MapPin, Trophy, Sparkles, Clock, ChevronDown, Trash2, Heart, Link2, Search, ExternalLink, Settings, Globe, Tag, CalendarClock, Award, Eye } from "lucide-react";
 import { getHiddenCategories } from "@/pages/BrandSettings";
 import { format } from "date-fns";
-import { WIDGET_FIELDS, getVisibleWidgetFields, setVisibleWidgetFields } from "@/lib/widgetFields";
+import { WIDGET_FIELDS, getVisibleWidgetFields, setVisibleWidgetFields, resetVisibleWidgetFields } from "@/lib/widgetFields";
 
 interface Brand {
   id: string;
@@ -573,9 +573,22 @@ export default function Brands() {
                                 />
                               </label>
                             ))}
-                            <p className="text-[10px] text-muted-foreground pt-1">
-                              These settings apply to all brand widgets on the Home page.
-                            </p>
+                            <div className="flex items-center justify-between pt-1">
+                              <p className="text-[10px] text-muted-foreground">
+                                Applies to all brand widgets on Home.
+                              </p>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const defaults = resetVisibleWidgetFields();
+                                  setWidgetFieldsState(defaults);
+                                  toast.success("Fields reset to defaults");
+                                }}
+                                className="text-[10px] font-medium text-primary active:scale-95 shrink-0"
+                              >
+                                Reset
+                              </button>
+                            </div>
                           </div>
                         )}
                       </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GripVertical, ChevronUp, ChevronDown } from "lucide-react";
+import { GripVertical, ChevronUp, ChevronDown, RotateCcw } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,7 +8,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import type { HomeWidget } from "@/lib/homeWidgets";
+import { DEFAULT_WIDGETS, type HomeWidget } from "@/lib/homeWidgets";
 
 interface Props {
   open: boolean;
@@ -96,6 +96,15 @@ export default function HomeWidgetEditor({ open, onOpenChange, widgets, onSave }
         </div>
 
         <div className="flex gap-2 mt-5">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0 active:scale-[0.97]"
+            onClick={() => setDraft(DEFAULT_WIDGETS.map((w) => ({ ...w })))}
+            title="Reset to defaults"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </Button>
           <Button variant="outline" className="flex-1 active:scale-[0.97]" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
