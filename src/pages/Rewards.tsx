@@ -295,6 +295,7 @@ export default function Rewards() {
           )}
         </DialogContent>
       </Dialog>
+      <BottomNav />
     </div>
   );
 }

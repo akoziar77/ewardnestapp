@@ -218,6 +218,7 @@ export default function Scan() {
           </div>
         )}
       </div>
+      <BottomNav />
     </div>
   );
 }

@@ -172,6 +172,7 @@ export default function Home() {
           </Button>
         </div>
       )}
+      <BottomNav />
     </div>
   );
 }

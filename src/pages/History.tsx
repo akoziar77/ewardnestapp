@@ -235,6 +235,7 @@ export default function History() {
           </div>
         )}
       </div>
+      <BottomNav />
     </div>
   );
 }
