@@ -41,10 +41,31 @@ export const TIERS = {
   },
 } as const;
 
-export type TierKey = keyof typeof TIERS;
+export type TierKey = keyof typeof TIERS | string;
 
-export function getTierByProductId(productId: string | null): TierKey {
+/**
+ * Maps a Stripe product_id to a tier slug.
+ * Falls back to checking hardcoded TIERS for backward compatibility,
+ * but the DB subscription_tiers table is the source of truth at runtime.
+ */
+export function getTierByProductId(productId: string | null): string {
+  if (!productId) return "free";
   if (productId === TIERS.pro.product_id) return "pro";
   if (productId === TIERS.business.product_id) return "business";
   return "free";
+}
+
+/**
+ * Dynamic version that accepts DB tiers for lookup.
+ */
+export function getTierSlugByProductId(
+  productId: string | null,
+  dbTiers?: Array<{ slug: string; stripe_product_id: string | null }>
+): string {
+  if (!productId) return "free";
+  if (dbTiers) {
+    const match = dbTiers.find((t) => t.stripe_product_id === productId);
+    if (match) return match.slug;
+  }
+  return getTierByProductId(productId);
 }
