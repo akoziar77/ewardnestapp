@@ -49,6 +49,7 @@ const App = () => (
             <Route path="/brands/settings" element={<BrandSettings />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/manage-tiers" element={<ManageTiers />} />
             <Route path="/merchant/login" element={<MerchantLogin />} />
             <Route path="/merchant/onboarding" element={<MerchantOnboarding />} />
             <Route path="/merchant" element={<MerchantLayout />}>
