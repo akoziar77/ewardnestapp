@@ -252,6 +252,7 @@ export default function Brands() {
               const isExpanded = expandedBrandId === brand.id;
               const brandVisits = visitsForBrand(brand.id);
               const isFavorite = favoriteIds.includes(brand.id);
+              const expiring = expiringVisitsNextMonth(brand.id);
 
               return (
                 <div
