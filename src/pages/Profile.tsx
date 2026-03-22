@@ -36,8 +36,10 @@ import {
   MapPin,
   Locate,
   Trash2,
+  Crown,
 } from "lucide-react";
 import { requestNotificationPermission } from "@/hooks/useGeofence";
+import { hasFeatureAccess } from "@/lib/featureGates";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 export default function Profile() {
