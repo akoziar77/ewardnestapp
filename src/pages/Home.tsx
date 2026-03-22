@@ -21,6 +21,14 @@ import {
 export default function Home() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [widgetLayout, setWidgetLayout] = useState<HomeWidget[]>(getWidgetLayout);
+  const [editorOpen, setEditorOpen] = useState(false);
+
+  const handleSaveLayout = (widgets: HomeWidget[]) => {
+    setWidgetLayout(widgets);
+    saveWidgetLayout(widgets);
+    toast.success("Home layout saved");
+  };
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
