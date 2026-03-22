@@ -32,6 +32,7 @@ const App = () => (
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/scan" element={<Scan />} />
             <Route path="/merchant/login" element={<MerchantLogin />} />
+            <Route path="/merchant/onboarding" element={<MerchantOnboarding />} />
             <Route path="/merchant" element={<MerchantLayout />}>
               <Route index element={<MerchantOverview />} />
               <Route path="rewards" element={<MerchantRewards />} />
