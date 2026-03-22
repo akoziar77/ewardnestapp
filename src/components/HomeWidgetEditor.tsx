@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GripVertical, ChevronUp, ChevronDown } from "lucide-react";
+import { GripVertical, ChevronUp, ChevronDown, RotateCcw } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,7 +8,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import type { HomeWidget } from "@/lib/homeWidgets";
+import { DEFAULT_WIDGETS, type HomeWidget } from "@/lib/homeWidgets";
 
 interface Props {
   open: boolean;
