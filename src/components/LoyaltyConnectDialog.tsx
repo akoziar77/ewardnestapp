@@ -336,21 +336,6 @@ export default function LoyaltyConnectDialog({
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Points balance
-                    </Label>
-                    <div className="relative">
-                      <Coins className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        type="number"
-                        value={editPoints}
-                        onChange={(e) => setEditPoints(e.target.value)}
-                        placeholder="e.g. 12500"
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
 
                   <div className="space-y-2">
                     <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
