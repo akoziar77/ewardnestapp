@@ -533,69 +533,55 @@ export default function Brands() {
                   {/* Expanded details */}
                   {isExpanded && (
                     <div className="border-t border-border px-4 pb-4">
-                      {/* Brand details — all API fields */}
-                       <div className="pt-3 pb-3">
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                          Brand details
-                        </p>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                          {BRAND_API_FIELDS.map(({ label, apiName, getValue }) => {
-                            const val = getValue(brand);
-                            const isLogo = apiName === "logo_emoji";
-                            return (
-                              <div key={apiName}>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                                  {label}
-                                </p>
-                                <p className="text-[9px] font-mono text-muted-foreground/50 mb-0.5">
-                                  {apiName}
-                                </p>
-                                {isLogo ? (
-                                  <p className="text-lg">{val}</p>
-                                ) : val ? (
-                                  <p className="text-xs font-medium tabular-nums">{val}</p>
-                                ) : (
-                                  <p className="text-xs italic text-muted-foreground/50">Not set</p>
-                                )}
-                              </div>
-                            );
-                          })}
-                          <div className="col-span-2">
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Website</p>
-                            <p className="text-[9px] font-mono text-muted-foreground/50 mb-0.5">website_url</p>
-                            {brand.website_url ? (
-                              <a
-                                href={brand.website_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-xs font-medium text-primary hover:underline truncate block"
-                              >
-                                {brand.website_url}
-                              </a>
-                            ) : (
-                              <p className="text-xs italic text-muted-foreground/50">Not set</p>
-                            )}
+                      {/* Comprehensive Loyalty API Fields by section */}
+                      {LOYALTY_SECTIONS.map((section) => {
+                        const fields = LOYALTY_API_FIELDS.filter((f) => f.section === section);
+                        const conn = getLoyaltyConnection(brand.id);
+                        const bVisits = visitsForBrand(brand.id);
+                        const exPts = expiringPointsForBrand(brand.id);
+                        return (
+                          <div key={section} className="pt-3 pb-2">
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                              {section}
+                            </p>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                              {fields.map(({ label, apiName, getValue }) => {
+                                const val = getValue({ brand, conn, profile, visits: bVisits, expiringPts: exPts });
+                                const isLogo = apiName === "logo_emoji";
+                                const isUrl = apiName === "website_url" || apiName === "loyalty_api_url" || apiName === "api_endpoint";
+                                const isFullWidth = isUrl || apiName === "brand_id";
+                                return (
+                                  <div key={apiName} className={isFullWidth ? "col-span-2" : ""}>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                      {label}
+                                    </p>
+                                    <p className="text-[9px] font-mono text-muted-foreground/50 mb-0.5">
+                                      {apiName}
+                                    </p>
+                                    {isLogo ? (
+                                      <p className="text-lg">{val}</p>
+                                    ) : isUrl && val ? (
+                                      <a
+                                        href={String(val)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="text-xs font-medium text-primary hover:underline truncate block"
+                                      >
+                                        {String(val)}
+                                      </a>
+                                    ) : val != null && val !== "" ? (
+                                      <p className="text-xs font-medium tabular-nums">{val}</p>
+                                    ) : (
+                                      <p className="text-xs italic text-muted-foreground/50">Not set</p>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
-                          <div className="col-span-2">
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Loyalty URL</p>
-                            <p className="text-[9px] font-mono text-muted-foreground/50 mb-0.5">loyalty_api_url</p>
-                            {brand.loyalty_api_url ? (
-                              <a
-                                href={brand.loyalty_api_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-xs font-medium text-primary hover:underline truncate block"
-                              >
-                                {brand.loyalty_api_url}
-                              </a>
-                            ) : (
-                              <p className="text-xs italic text-muted-foreground/50">Not set</p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
+                        );
+                      })}
                       {/* Widget display toggles */}
                       <div className="pt-3 border-t border-border">
                         <button
