@@ -239,8 +239,22 @@ export default function Brands() {
                     }
                     className="flex w-full items-start gap-3 p-4 text-left active:scale-[0.99] transition-transform"
                   >
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">
+                    <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted text-2xl">
                       {brand.logo_emoji}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavoriteMutation.mutate(brand.id);
+                        }}
+                        className={`absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full transition-all active:scale-90 ${
+                          isFavorite
+                            ? "bg-destructive text-destructive-foreground"
+                            : "bg-muted-foreground/20 text-muted-foreground hover:bg-muted-foreground/30"
+                        }`}
+                        title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                      >
+                        <Heart className={`h-2.5 w-2.5 ${isFavorite ? "fill-current" : ""}`} />
+                      </button>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
