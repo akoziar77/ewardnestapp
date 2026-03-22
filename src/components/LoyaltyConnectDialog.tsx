@@ -85,6 +85,39 @@ export default function LoyaltyConnectDialog({
   const [password, setPassword] = useState("");
   const [pointsBalance, setPointsBalance] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editMemberId, setEditMemberId] = useState("");
+  const [editPoints, setEditPoints] = useState("");
+
+  const handleUpdate = async () => {
+    if (!user || !connection) return;
+    setLoading(true);
+    try {
+      const parsedPoints = editPoints.trim() ? parseInt(editPoints, 10) : null;
+      const { data, error } = await supabase.functions.invoke("connect-loyalty", {
+        body: {
+          action: "connect",
+          brand_id: brandId,
+          provider_name: connection.provider_name,
+          api_endpoint: connection.api_endpoint || null,
+          external_member_id: editMemberId.trim() || null,
+          points_balance: !isNaN(parsedPoints as number) ? parsedPoints : null,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        toast.error(data.message || data.error);
+        return;
+      }
+      toast.success("Loyalty connection updated");
+      setIsEditing(false);
+      onConnectionChange();
+    } catch {
+      toast.error("Failed to update connection");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleConnect = async () => {
     if (!user || !providerName.trim()) {
