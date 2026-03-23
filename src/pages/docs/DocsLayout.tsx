@@ -2,6 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DocsSearchTrigger } from "./components/DocsSearch";
+import { VersionSwitcher } from "./components/VersionSwitcher";
 
 const links = [
   { title: "Introduction", href: "/docs", end: true },
