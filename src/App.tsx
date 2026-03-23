@@ -42,6 +42,15 @@ import AdminReceiptReview from "./pages/admin/AdminReceiptReview";
 import AdminInsights from "./pages/admin/AdminInsights";
 import AdminWebhooks from "./pages/admin/AdminWebhooks";
 import AdminEventExplorer from "./pages/admin/AdminEventExplorer";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminBrands from "./pages/admin/AdminBrands";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminRewardsPage from "./pages/admin/AdminRewardsPage";
+import AdminProgramSettings from "./pages/admin/AdminProgramSettings";
+import AdminCampaigns from "./pages/admin/AdminCampaigns";
+import AdminAutomations from "./pages/admin/AdminAutomations";
+import AdminIntegrations from "./pages/admin/AdminIntegrations";
 import ReceiptUpload from "./pages/ReceiptUpload";
 import ConsentBanner from "./components/ConsentBanner";
 import NotFound from "./pages/NotFound";
@@ -111,19 +120,27 @@ function AppRoutes() {
         </Route>
       </Route>
 
-      {/* Admin only */}
+      {/* Admin only — with sidebar layout */}
       <Route element={<ProtectedRoute signedIn={signedIn} roles={roles} required={["admin"]} />}>
-        <Route path="/admin/roles" element={<PageGate pageKey="admin_roles"><AdminRoles /></PageGate>} />
-        <Route path="/admin/page-access" element={<PageGate pageKey="admin_page_access"><AdminPageAccess /></PageGate>} />
-        <Route path="/admin/privacy-policy" element={<PageGate pageKey="admin_privacy_policy"><AdminPrivacyPolicy /></PageGate>} />
-        <Route path="/admin/quick-actions" element={<PageGate pageKey="admin_quick_actions"><AdminQuickActions /></PageGate>} />
-        <Route path="/admin/onboarding" element={<PageGate pageKey="admin_onboarding"><AdminOnboarding /></PageGate>} />
-        <Route path="/admin/pages" element={<PageGate pageKey="admin_page_directory"><AdminPageDirectory /></PageGate>} />
-        <Route path="/admin/boosters" element={<PageGate pageKey="admin_boosters"><AdminBoosters /></PageGate>} />
-        <Route path="/admin/receipts" element={<PageGate pageKey="admin_receipts"><AdminReceiptReview /></PageGate>} />
-        <Route path="/admin/insights" element={<PageGate pageKey="admin_insights"><AdminInsights /></PageGate>} />
-        <Route path="/admin/webhooks" element={<PageGate pageKey="admin_webhooks"><AdminWebhooks /></PageGate>} />
-        <Route path="/admin/events" element={<PageGate pageKey="admin_events"><AdminEventExplorer /></PageGate>} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<PageGate pageKey="admin_dashboard"><AdminDashboard /></PageGate>} />
+          <Route path="program-settings" element={<PageGate pageKey="admin_program_settings"><AdminProgramSettings /></PageGate>} />
+          <Route path="program-settings/page-access" element={<PageGate pageKey="admin_page_access"><AdminPageAccess /></PageGate>} />
+          <Route path="program-settings/privacy-policy" element={<PageGate pageKey="admin_privacy_policy"><AdminPrivacyPolicy /></PageGate>} />
+          <Route path="program-settings/quick-actions" element={<PageGate pageKey="admin_quick_actions"><AdminQuickActions /></PageGate>} />
+          <Route path="program-settings/pages" element={<PageGate pageKey="admin_page_directory"><AdminPageDirectory /></PageGate>} />
+          <Route path="program-settings/onboarding" element={<PageGate pageKey="admin_onboarding"><AdminOnboarding /></PageGate>} />
+          <Route path="brands" element={<PageGate pageKey="admin_brands"><AdminBrands /></PageGate>} />
+          <Route path="users" element={<PageGate pageKey="admin_roles"><AdminUsers /></PageGate>} />
+          <Route path="receipts" element={<PageGate pageKey="admin_receipts"><AdminReceiptReview /></PageGate>} />
+          <Route path="rewards" element={<PageGate pageKey="admin_rewards"><AdminRewardsPage /></PageGate>} />
+          <Route path="campaigns" element={<PageGate pageKey="admin_boosters"><AdminCampaigns /></PageGate>} />
+          <Route path="automations" element={<PageGate pageKey="admin_automations"><AdminAutomations /></PageGate>} />
+          <Route path="automations/webhooks" element={<PageGate pageKey="admin_webhooks"><AdminWebhooks /></PageGate>} />
+          <Route path="automations/events" element={<PageGate pageKey="admin_events"><AdminEventExplorer /></PageGate>} />
+          <Route path="integrations" element={<PageGate pageKey="admin_integrations"><AdminIntegrations /></PageGate>} />
+          <Route path="analytics" element={<PageGate pageKey="admin_insights"><AdminInsights /></PageGate>} />
+        </Route>
       </Route>
 
       <Route path="*" element={<NotFound />} />
