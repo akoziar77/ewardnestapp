@@ -88,6 +88,7 @@ function AppRoutes() {
         <Route path="webhooks" element={<WebhooksDoc />} />
         <Route path="events" element={<EventsDoc />} />
         <Route path="sdk-node" element={<SdkNodeDoc />} />
+        <Route path="engines" element={<EnginesDoc />} />
         <Route path="testing" element={<TestingDoc />} />
         <Route path="changelog" element={<ChangelogDoc />} />
       </Route>
