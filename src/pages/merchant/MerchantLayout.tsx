@@ -48,6 +48,7 @@ export default function MerchantLayout() {
     { to: "/merchant/rewards", icon: Gift, label: "Rewards", end: false },
     { to: "/merchant/redemptions", icon: Receipt, label: "Redemptions", end: false },
     { to: "/merchant/qr", icon: QrCode, label: "QR Code", end: false },
+    { to: "/merchant/insights", icon: PieChart, label: "Insights", end: false },
   ];
 
   return (
