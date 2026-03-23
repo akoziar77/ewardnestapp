@@ -145,6 +145,8 @@ Deno.serve(async (req) => {
         await supabaseAdmin.from("booster_tier_rules").delete().eq("booster_id", body.booster_id);
         await supabaseAdmin.from("booster_action_rules").delete().eq("booster_id", body.booster_id);
         await supabaseAdmin.from("booster_user_targets").delete().eq("booster_id", body.booster_id);
+        await supabaseAdmin.from("booster_sku_rules").delete().eq("booster_id", body.booster_id);
+        await supabaseAdmin.from("booster_category_rules").delete().eq("booster_id", body.booster_id);
         const { error } = await supabaseAdmin.from("boosters").delete().eq("id", body.booster_id);
         if (error) throw error;
         await logWarn(supabaseAdmin, "Booster deleted", { booster_id: body.booster_id, admin_id: user.id });
