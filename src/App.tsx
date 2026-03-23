@@ -25,6 +25,7 @@ import MerchantRewards from "./pages/merchant/MerchantRewards";
 import MerchantRedemptions from "./pages/merchant/MerchantRedemptions";
 import MerchantQR from "./pages/merchant/MerchantQR";
 import MerchantInsights from "./pages/merchant/MerchantInsights";
+import MerchantBoosters from "./pages/merchant/MerchantBoosters";
 import MerchantOnboarding from "./pages/merchant/MerchantOnboarding";
 import ResetPassword from "./pages/ResetPassword";
 import Pricing from "./pages/Pricing";
