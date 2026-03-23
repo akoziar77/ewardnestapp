@@ -81,6 +81,7 @@ function AppRoutes() {
           <Route path="rewards" element={<MerchantRewards />} />
           <Route path="redemptions" element={<MerchantRedemptions />} />
           <Route path="qr" element={<MerchantQR />} />
+          <Route path="insights" element={<MerchantInsights />} />
         </Route>
       </Route>
 
