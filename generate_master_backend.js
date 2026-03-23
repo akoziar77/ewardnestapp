@@ -8,7 +8,7 @@
  * in the correct order.
  */
 
-const fs = require("fs");
+import fs from "fs";
 
 // ---------------------------------------------
 // MODULE 1 — COLLECTIONS
