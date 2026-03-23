@@ -41,6 +41,7 @@ import AdminBoosters from "./pages/admin/AdminBoosters";
 import AdminReceiptReview from "./pages/admin/AdminReceiptReview";
 import AdminInsights from "./pages/admin/AdminInsights";
 import AdminWebhooks from "./pages/admin/AdminWebhooks";
+import AdminEventExplorer from "./pages/admin/AdminEventExplorer";
 import ReceiptUpload from "./pages/ReceiptUpload";
 import ConsentBanner from "./components/ConsentBanner";
 import NotFound from "./pages/NotFound";
