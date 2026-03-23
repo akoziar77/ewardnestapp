@@ -63,8 +63,30 @@ Deno.serve(async (req) => {
           bonus_value: body.bonus_value ?? 0,
           required_action: body.required_action ?? "any",
           required_tier: body.required_tier ?? "any",
+          min_spend: body.min_spend ?? 0,
+          required_brands: body.required_brands ?? 0,
+          required_streak: body.required_streak ?? 0,
         }).select().single();
         if (error) throw error;
+
+        // Save SKU/category rules if provided
+        if (body.sku_rules?.length && data.id) {
+          const skuRows = body.sku_rules.map((r: any) => ({
+            booster_id: data.id,
+            sku_keyword: r.sku_keyword,
+            points: r.points ?? 0,
+          }));
+          await supabaseAdmin.from("booster_sku_rules").insert(skuRows);
+        }
+        if (body.category_rules?.length && data.id) {
+          const catRows = body.category_rules.map((r: any) => ({
+            booster_id: data.id,
+            category_keyword: r.category_keyword,
+            points: r.points ?? 0,
+          }));
+          await supabaseAdmin.from("booster_category_rules").insert(catRows);
+        }
+
         await logInfo(supabaseAdmin, "Booster created", { booster_id: data.id, admin_id: user.id });
         return jsonResponse({ success: true, booster: data });
       }
