@@ -103,6 +103,12 @@
   }
 }
 
+@layer base {
+  code {
+    @apply bg-muted px-1 py-0.5 rounded text-sm;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
