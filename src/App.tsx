@@ -40,6 +40,7 @@ import AdminPageDirectory from "./pages/admin/AdminPageDirectory";
 import AdminBoosters from "./pages/admin/AdminBoosters";
 import AdminReceiptReview from "./pages/admin/AdminReceiptReview";
 import AdminInsights from "./pages/admin/AdminInsights";
+import AdminWebhooks from "./pages/admin/AdminWebhooks";
 import ReceiptUpload from "./pages/ReceiptUpload";
 import ConsentBanner from "./components/ConsentBanner";
 import NotFound from "./pages/NotFound";
@@ -99,6 +100,7 @@ function AppRoutes() {
         <Route path="/admin/boosters" element={<PageGate pageKey="admin_boosters"><AdminBoosters /></PageGate>} />
         <Route path="/admin/receipts" element={<PageGate pageKey="admin_receipts"><AdminReceiptReview /></PageGate>} />
         <Route path="/admin/insights" element={<PageGate pageKey="admin_insights"><AdminInsights /></PageGate>} />
+        <Route path="/admin/webhooks" element={<PageGate pageKey="admin_webhooks"><AdminWebhooks /></PageGate>} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
