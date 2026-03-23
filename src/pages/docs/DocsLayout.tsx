@@ -26,7 +26,9 @@ export default function DocsLayout() {
           </NavLink>
           <div className="h-5 w-px bg-border" />
           <span className="font-semibold text-foreground tracking-tight">RewardsNest Developer Portal</span>
-        </div>
+          <div className="ml-auto">
+            <DocsSearchTrigger />
+          </div>
       </header>
 
       <div className="flex flex-1 max-w-7xl mx-auto w-full">
