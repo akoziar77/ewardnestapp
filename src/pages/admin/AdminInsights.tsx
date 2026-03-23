@@ -98,23 +98,8 @@ export default function AdminInsights() {
     boostersQ.isLoading;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      {/* Header */}
-      <div className="bg-card border-b px-4 py-4 flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="text-xl font-bold text-foreground">
-            Loyalty Engine Dashboard
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Platform-wide analytics &amp; health
-          </p>
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto p-4 space-y-8">
+    <div className="pb-24">
+      <div className="max-w-6xl mx-auto space-y-8">
         {/* ── Summary Metrics ── */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <MetricCard

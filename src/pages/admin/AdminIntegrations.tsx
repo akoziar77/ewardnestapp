@@ -3,10 +3,9 @@ import { Plug } from "lucide-react";
 
 export default function AdminIntegrations() {
   return (
-    <div className="p-6 md:p-8 max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Integrations</h1>
-        <p className="text-sm text-muted-foreground mt-1">Connect external services and APIs.</p>
+        <p className="text-sm text-muted-foreground">Connect external services and APIs.</p>
       </div>
 
       <Card>
