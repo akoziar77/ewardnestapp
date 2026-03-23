@@ -11,6 +11,7 @@ const links = [
   { title: "Authentication", href: "/docs/auth" },
   { title: "API Keys", href: "/docs/api-keys" },
   { title: "SDKs", href: "/docs/sdk-node" },
+  { title: "Engines", href: "/docs/engines" },
   { title: "Testing Tools", href: "/docs/testing" },
   { title: "Changelog", href: "/docs/changelog" },
 ];

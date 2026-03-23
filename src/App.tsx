@@ -61,6 +61,7 @@ import ApiKeysDoc from "./pages/docs/ApiKeysDoc";
 import WebhooksDoc from "./pages/docs/WebhooksDoc";
 import EventsDoc from "./pages/docs/EventsDoc";
 import SdkNodeDoc from "./pages/docs/SdkNodeDoc";
+import EnginesDoc from "./pages/docs/EnginesDoc";
 import TestingDoc from "./pages/docs/TestingDoc";
 import ChangelogDoc from "./pages/docs/ChangelogDoc";
 
@@ -87,6 +88,7 @@ function AppRoutes() {
         <Route path="webhooks" element={<WebhooksDoc />} />
         <Route path="events" element={<EventsDoc />} />
         <Route path="sdk-node" element={<SdkNodeDoc />} />
+        <Route path="engines" element={<EnginesDoc />} />
         <Route path="testing" element={<TestingDoc />} />
         <Route path="changelog" element={<ChangelogDoc />} />
       </Route>
