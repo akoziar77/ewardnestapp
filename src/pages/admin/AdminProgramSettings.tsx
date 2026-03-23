@@ -14,10 +14,9 @@ export default function AdminProgramSettings() {
   const navigate = useNavigate();
 
   return (
-    <div className="p-6 md:p-8 max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Program Settings</h1>
-        <p className="text-sm text-muted-foreground mt-1">Configure your loyalty program behaviour.</p>
+        <p className="text-sm text-muted-foreground">Configure your loyalty program behaviour.</p>
       </div>
 
       <div className="grid gap-3">

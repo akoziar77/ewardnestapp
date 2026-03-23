@@ -26,10 +26,9 @@ export default function AdminRewardsPage() {
   });
 
   return (
-    <div className="p-6 md:p-8 max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Rewards</h1>
-        <p className="text-sm text-muted-foreground mt-1">All rewards across merchants.</p>
+        <p className="text-sm text-muted-foreground">All rewards across merchants.</p>
       </div>
 
       <Card>
