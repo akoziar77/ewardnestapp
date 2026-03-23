@@ -1,19 +1,4 @@
-/**
- * MASTER BACKEND FILE GENERATOR
- * -----------------------------------------
- * Run with:  node generate_master_backend.js
- *
- * This script generates master_backend.js
- * containing ALL 8 backend modules merged
- * in the correct order.
- */
 
-import fs from "fs";
-
-// ---------------------------------------------
-// MODULE 1 — COLLECTIONS
-// ---------------------------------------------
-const module1 = `
 ///////////////////////////////////////////////////////////
 // MASTER SCRIPT — PART 1: CORE COLLECTIONS
 ///////////////////////////////////////////////////////////
@@ -158,12 +143,9 @@ collection("system_logs", {
     created_at: { type: "datetime", default: now() }
   }
 });
-`;
 
-/* ---------------------------------------------
-   MODULE 2 — UTILITIES
---------------------------------------------- */
-const module2 = `
+
+
 ///////////////////////////////////////////////////////////
 // MASTER SCRIPT — PART 2: UTILITY FUNCTIONS
 ///////////////////////////////////////////////////////////
@@ -180,7 +162,7 @@ function toNumber(value, fallback = 0) {
 function requireFields(obj, fields) {
   for (const field of fields) {
     if (!obj[field] && obj[field] !== 0) {
-      throw new Error(\`Missing required field: \${field}\`);
+      throw new Error(`Missing required field: ${field}`);
     }
   }
 }
@@ -349,12 +331,9 @@ function sanitizeUser(user) {
   delete clone.api_secret;
   return clone;
 }
-`;
 
-/* ---------------------------------------------
-   MODULE 3 — BOOSTER ENGINE
---------------------------------------------- */
-const module3 = `
+
+
 ///////////////////////////////////////////////////////////
 // MASTER SCRIPT — PART 3: BOOSTER ENGINE
 ///////////////////////////////////////////////////////////
@@ -447,12 +426,9 @@ async function applyStreakBooster(booster, user_id) {
   const pointsPerStreak = booster.points_per_streak || 1;
   return streak.streak_count * pointsPerStreak;
 }
-`;
 
-/* ---------------------------------------------
-   MODULE 4 — ENGAGE+ ENGINE
---------------------------------------------- */
-const module4 = `
+
+
 ///////////////////////////////////////////////////////////
 // MASTER SCRIPT — PART 4: ENGAGE+ ENGINE
 ///////////////////////////////////////////////////////////
@@ -500,12 +476,9 @@ async function getEngagePlusSummary(user_id) {
     last_engage_date: streak.last_engage_date
   };
 }
-`;
 
-/* ---------------------------------------------
-   MODULE 5 — ADMIN ENDPOINTS
---------------------------------------------- */
-const module5 = `
+
+
 ///////////////////////////////////////////////////////////
 // MASTER SCRIPT — PART 5: ADMIN ENDPOINTS
 ///////////////////////////////////////////////////////////
@@ -659,12 +632,9 @@ endpoint.get("/admin/logs", async (request) => {
   );
   return { logs };
 });
-`;
 
-/* ---------------------------------------------
-   MODULE 6 — USER ENDPOINTS
---------------------------------------------- */
-const module6 = `
+
+
 ///////////////////////////////////////////////////////////
 // MASTER SCRIPT — PART 6: USER ENDPOINTS
 ///////////////////////////////////////////////////////////
@@ -815,12 +785,9 @@ endpoint.get("/user/engage/summary", async (request) => {
   const summary = await getEngagePlusSummary(user.id);
   return { summary };
 });
-`;
 
-/* ---------------------------------------------
-   MODULE 7 — BRAND PORTAL ENDPOINTS
---------------------------------------------- */
-const module7 = `
+
+
 ///////////////////////////////////////////////////////////
 // MASTER SCRIPT — PART 7: BRAND PORTAL ENDPOINTS
 ///////////////////////////////////////////////////////////
@@ -1031,12 +998,9 @@ endpoint.get("/brand/boosters/:id/logs", async (request) => {
 
   return { logs };
 });
-`;
 
-/* ---------------------------------------------
-   MODULE 8 — SAMPLE DATA SEEDING
---------------------------------------------- */
-const module8 = `
+
+
 ///////////////////////////////////////////////////////////
 // MASTER SCRIPT — PART 8: SAMPLE DATA SEEDING
 ///////////////////////////////////////////////////////////
@@ -1142,29 +1106,3 @@ async function seedSampleData() {
     brand_id: brand.id
   };
 }
-`;
-
-/* ---------------------------------------------
-   FINAL: COMBINE MODULES + WRITE FILE
---------------------------------------------- */
-
-const masterScript =
-  module1 +
-  "\n\n" +
-  module2 +
-  "\n\n" +
-  module3 +
-  "\n\n" +
-  module4 +
-  "\n\n" +
-  module5 +
-  "\n\n" +
-  module6 +
-  "\n\n" +
-  module7 +
-  "\n\n" +
-  module8;
-
-fs.writeFileSync("master_backend.js", masterScript);
-
-console.log("✅ Master backend file created: master_backend.js");
