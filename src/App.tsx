@@ -45,6 +45,15 @@ import AdminEventExplorer from "./pages/admin/AdminEventExplorer";
 import ReceiptUpload from "./pages/ReceiptUpload";
 import ConsentBanner from "./components/ConsentBanner";
 import NotFound from "./pages/NotFound";
+import DocsLayout from "./pages/docs/DocsLayout";
+import DocsHome from "./pages/docs/DocsHome";
+import AuthDoc from "./pages/docs/AuthDoc";
+import ApiKeysDoc from "./pages/docs/ApiKeysDoc";
+import WebhooksDoc from "./pages/docs/WebhooksDoc";
+import EventsDoc from "./pages/docs/EventsDoc";
+import SdkNodeDoc from "./pages/docs/SdkNodeDoc";
+import TestingDoc from "./pages/docs/TestingDoc";
+import ChangelogDoc from "./pages/docs/ChangelogDoc";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +69,18 @@ function AppRoutes() {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/merchant/login" element={<MerchantLogin />} />
+
+      {/* Developer Portal (public) */}
+      <Route path="/docs" element={<DocsLayout />}>
+        <Route index element={<DocsHome />} />
+        <Route path="auth" element={<AuthDoc />} />
+        <Route path="api-keys" element={<ApiKeysDoc />} />
+        <Route path="webhooks" element={<WebhooksDoc />} />
+        <Route path="events" element={<EventsDoc />} />
+        <Route path="sdk-node" element={<SdkNodeDoc />} />
+        <Route path="testing" element={<TestingDoc />} />
+        <Route path="changelog" element={<ChangelogDoc />} />
+      </Route>
 
       {/* Signed-in: any role (user, manager, admin) */}
       <Route element={<ProtectedRoute signedIn={signedIn} roles={roles} required={["user", "manager", "admin"]} />}>
