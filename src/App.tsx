@@ -36,6 +36,7 @@ import AdminQuickActions from "./pages/admin/AdminQuickActions";
 import AdminOnboarding from "./pages/admin/AdminOnboarding";
 import AdminPageDirectory from "./pages/admin/AdminPageDirectory";
 import AdminBoosters from "./pages/admin/AdminBoosters";
+import ReceiptUpload from "./pages/ReceiptUpload";
 import ConsentBanner from "./components/ConsentBanner";
 import NotFound from "./pages/NotFound";
 
@@ -66,6 +67,7 @@ function AppRoutes() {
         <Route path="/brands" element={<PageGate pageKey="brands"><Brands /></PageGate>} />
         <Route path="/brands/settings" element={<PageGate pageKey="brands_settings"><BrandSettings /></PageGate>} />
         <Route path="/engage" element={<PageGate pageKey="engage"><Engage /></PageGate>} />
+        <Route path="/receipts" element={<PageGate pageKey="receipts"><ReceiptUpload /></PageGate>} />
       </Route>
 
       {/* Manager or admin */}
